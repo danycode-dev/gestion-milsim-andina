@@ -20,7 +20,7 @@ export async function memberPost(req, res) {
         }
       );
     }
-    const data = await newMember({nickname:req.body.nickname, rank_id:req.body.rank_id, unit_id:req.body.unit_id});
+    const data = await newMember({nickname:req.body.nickname, rank_id:req.body.rank_id, unit_id:req.body.unit_id}, user.id);
     res.json({ ok : true, data });
 
   } catch (err) {
@@ -59,7 +59,7 @@ export async function patchMember(req, res){
 
 
 		// service
-    const memberEdit = await parcialUpdateMember(val, memberId);
+    const memberEdit = await parcialUpdateMember(val, memberId, user.id);
 
     if (!memberEdit) {
       return res.status(404).json({
@@ -95,7 +95,7 @@ export async function deleteMemberController(req, res) {
       });
     }
 
-    const memberDelete = await deleteMember(memberId);
+    const memberDelete = await deleteMember(memberId, user.id);
 
     if (!memberDelete) {
       return res.status(404).json({
