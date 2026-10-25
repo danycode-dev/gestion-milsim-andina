@@ -156,7 +156,8 @@ export default function DashboardPage() {
             {/* <TabBtn identify="meses" name="Meses" /> */}
             <TabBtn identify="miembros" name="Gestionar Miembros" permissionNeed='members.view'/>
             <TabBtn identify="users" name="Usuarios y Roles" permissionNeed='users.view'/>
-            <TabBtn identify="prox" name="Gestionar Unidades" />
+            <TabBtn identify="audit_logs" name="Logs" />
+            <TabBtn identify="prox" name="Unidades y Parches" />
         </div>
 
 
