@@ -6,7 +6,7 @@ import { deleteMember, newMember, parcialUpdateMember } from "../services/member
 export async function memberPost(req, res) {
   /** @type {User | undefined} */
   const user = req.user
-  if (!user.permissions.includes('members.create')) return res.sendStatus(403);
+  if (!user.permissions.includes('members.create')) return res.status(403).json({ ok: false, error: "No tienes permiso para realizar esta acción." });
   try {
     if (!req.body || !req.body.nickname || !req.body.rank_id || !req.body.unit_id) {
       return res.status(400).json(
@@ -32,7 +32,7 @@ export async function memberPost(req, res) {
 export async function patchMember(req, res){ 
   /** @type {User | undefined} */
   const user = req.user
-  if (!user.permissions.includes('members.edit')) return res.sendStatus(403);
+  if (!user.permissions.includes('members.edit')) return res.status(403).json({ ok: false, error: "No tienes permiso para realizar esta acción." });
   try{
 
 
@@ -82,7 +82,7 @@ export async function deleteMemberController(req, res) {
   const user = req.user;
 
   if (!user.permissions.includes('members.delete')) {
-    return res.sendStatus(403);
+    return res.status(403).json({ ok: false, error: "No tienes permiso para realizar esta acción." });
   }
 
   try {
