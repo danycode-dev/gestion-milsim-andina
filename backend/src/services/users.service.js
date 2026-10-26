@@ -95,10 +95,22 @@ export async function newUser({
 export async function getUsers(search = "") {
   const result = await pool.query(
     `SELECT
-      id, username, email, role_id, active, all_units
-     FROM users
-     WHERE username ILIKE $1 OR email ILIKE $1
-     ORDER BY id ASC`,
+        u.id,
+        u.username,
+        u.email,
+        u.role_id,
+        u.active,
+        u.all_units,
+        COALESCE(
+          ARRAY_AGG(p.name) FILTER (WHERE p.name IS NOT NULL),
+          ARRAY[]::TEXT[]
+        ) AS permissions
+     FROM users u
+     LEFT JOIN role_permissions rp ON rp.role_id = u.role_id
+     LEFT JOIN permissions p ON p.id = rp.permission_id
+     WHERE u.username ILIKE $1 OR u.email ILIKE $1
+     GROUP BY u.id
+     ORDER BY u.id ASC`,
     [`%${search}%`]
   );
 
