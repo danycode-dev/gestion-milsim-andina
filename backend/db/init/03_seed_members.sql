@@ -17,7 +17,7 @@ INSERT INTO permissions (name) VALUES
 INSERT INTO roles (name) VALUES
 ('admin'),
 ('editor'),
-('Mando GAA')
+('Mando GAA'),
 ('viewer');
 
 INSERT INTO role_permissions (role_id, permission_id)
