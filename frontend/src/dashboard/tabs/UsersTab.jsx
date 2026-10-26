@@ -205,113 +205,116 @@ function UserRow({
   const { openModal } = useModal();
 
       // Acciones: modales aun no implementadas
-    const newUserHandler = () => {
-      openModal("new-user", {});
-    };
-
-    const editUserHandler = (user) => {
-      openModal("edit-user", { user });
-    };
-
-    const viewUserHandler = (user) => {
-      openModal("view-user", { user });
-    };
-
-    const permissionsHandler = (user) => {
-      openModal("user-permissions", { user });
-    };
-
-    const toggleUserHandler = (user) => {
-      openModal("toggle-user-status", { user });
-    };
-    return(
-
-        <div
-          key={`divsdahjk${user.id}`}
-          className="bg-[#303030] hover:bg-[#383838] border border-dashboard-border rounded-lg p-4 transition"
-        >
-          <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
-            {/* IDENTIDAD */}
-            <div className="flex items-center gap-3 min-w-0">
-              <div className="shrink-0 w-11 h-11 rounded-full bg-dashboard-button border border-[#555] flex items-center justify-center text-dashboard-accent font-bold">
-                {user.username?.charAt(0)?.toUpperCase() || "?"}
-              </div>
-              <div className="min-w-0">
-                <div className="flex items-center flex-wrap gap-2">
-                  <span className="font-semibold text-gray-200">
-                    {user.username}
-                  </span>
-                  <span
-                    className={`text-xs px-2 py-0.5 rounded border ${
-                      user.active
-                        ? "bg-green-900/30 text-green-400 border-green-800"
-                        : "bg-red-900/30 text-red-400 border-red-800"
-                    }`}
-                  >
-                    {user.active ? "Activo" : "Inactivo"}
-                  </span>
-                </div>
-                <p className="text-xs text-gray-400 mt-1 break-all">
-                  {user.email || "Sin correo registrado"}
-                </p>
-                <div className="flex flex-wrap gap-x-3 gap-y-1 mt-2 text-xs text-gray-500">
-                  <span>ID: {user.id}</span>
-                  <span>
-                    Rol: {rolesById[user.role_id] ? rolesById[user.role_id].name :user.role_id}
-                  </span>
-                </div>
-              </div>
+  const newUserHandler = () => {
+    openModal("new-user", {});
+  };
+  const editUserHandler = (user) => {
+    openModal("edit-user", { user });
+  };
+  const viewUserHandler = (user) => {
+    openModal("view-user", { user });
+  };
+  const permissionsHandler = (user) => {
+    openModal("user-permissions", { user });
+  };
+  const toggleUserHandler = (user) => {
+    openModal("toggle-user-status", { user });
+  };
+  return(
+      <div
+        key={`divsdahjk${user.id}`}
+        className="bg-[#303030] hover:bg-[#383838] border border-dashboard-border rounded-lg p-4 transition"
+      >
+        <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+          {/* IDENTIDAD */}
+          <div className="flex items-center gap-3 min-w-0">
+            <div className="shrink-0 w-11 h-11 rounded-full bg-dashboard-button border border-[#555] flex items-center justify-center text-dashboard-accent font-bold">
+              {user.username?.charAt(0)?.toUpperCase() || "?"}
             </div>
-            {/* ACCIONES */}
-            <div className="flex flex-wrap items-center gap-2 shrink-0">
-              <button
-                className="btn-secondary text-xs"
-                onClick={() => viewUserHandler(user)}
-              >
-                Ver
-              </button>
-              <button
-                className="btn-secondary text-xs"
-                onClick={() => editUserHandler(user)}
-              >
-                Editar
-              </button>
-              <button
-                className="btn-secondary text-xs"
-                onClick={() => permissionsHandler(user)}
-              >
-                Permisos
-              </button>
-              <button
-                className="px-3 py-2 text-xs rounded bg-red-900/30 text-red-400 hover:bg-red-900/50 border border-red-900 transition"
-                onClick={() => toggleUserHandler(user)}
-              >
-                {user.active ? "Desactivar" : "Activar"}
-              </button>
+            <div className="min-w-0">
+              <div className="flex items-center flex-wrap gap-2">
+                <span className="font-semibold text-gray-200">
+                  {user.username}
+                </span>
+                <span
+                  className={`text-xs px-2 py-0.5 rounded border ${
+                    user.active
+                      ? "bg-green-900/30 text-green-400 border-green-800"
+                      : "bg-red-900/30 text-red-400 border-red-800"
+                  }`}
+                >
+                  {user.active ? "Activo" : "Inactivo"}
+                </span>
+              </div>
+              <p className="text-xs text-gray-400 mt-1 break-all">
+                {user.email || "Sin correo registrado"}
+              </p>
+              <div className="flex flex-wrap gap-x-3 gap-y-1 mt-2 text-xs text-gray-500">
+                <span>ID: {user.id}</span>
+                <span>
+                  Rol: {rolesById[user.role_id] ? rolesById[user.role_id].name :user.role_id}
+                </span>
+              </div>
             </div>
           </div>
-          {/* PERMISOS Y UNIDADES */}
-          <div className="mt-4 pt-3 border-t border-dashboard-border flex flex-col md:flex-row md:items-center gap-3 md:gap-6">
-            <div className="flex items-center flex-wrap gap-2">
-              <span className="text-xs text-gray-500">
-                Permisos:
-              </span>
-              <span className="text-xs text-dashboard-accent">
-                {user.permissions?.length ?? 0} asignados
-              </span>
-            </div>
-            <div className="flex items-center flex-wrap gap-2">
-              <span className="text-xs text-gray-500">
-                Unidades:
-              </span>
-              <span className="text-xs text-gray-300">
-                {user.all_units
-                  ? "Todas las unidades"
-                  : `${user.units?.length ?? 0} asignadas`}
-              </span>
-            </div>
+          {/* ACCIONES */}
+          <div className="flex flex-wrap items-center gap-2 shrink-0">
+            <button
+              className="btn-secondary text-xs"
+              onClick={() => viewUserHandler(user)}
+            >
+              Ver
+            </button>
+            <button
+              className="btn-secondary text-xs"
+              onClick={() => editUserHandler(user)}
+            >
+              Editar
+            </button>
+            <button
+              className="btn-secondary text-xs"
+              onClick={() => permissionsHandler(user)}
+            >
+              Permisos
+            </button>
+            <button
+              className="px-3 py-2 text-xs rounded bg-red-900/30 text-red-400 hover:bg-red-900/50 border border-red-900 transition"
+              onClick={() => toggleUserHandler(user)}
+            >
+              {user.active ? "Desactivar" : "Activar"}
+            </button>
           </div>
         </div>
-
-    )
+        {/* PERMISOS Y UNIDADES */}
+        <div className="mt-4 pt-3 border-t border-dashboard-border flex flex-col md:flex-row md:items-center gap-3 md:gap-6">
+          <div className="flex items-center flex-wrap gap-2">
+            <span className="text-xs text-gray-500">
+              Permisos heredados:
+            </span>
+            <span className="text-xs text-dashboard-accent">
+              {user.permissions?.length ?? 0} asignados
+            </span>
+          </div>
+          <div className="flex items-center flex-wrap gap-2">
+            <span className="text-xs text-gray-500">
+              Permisos totales:
+            </span>
+            <span className="text-xs text-dashboard-accent">
+              {user.permissions?.length ?? 0} asignados
+            </span>
+          </div>
+          
+          <div className="flex items-center flex-wrap gap-2">
+            <span className="text-xs text-gray-500">
+              Unidades:
+            </span>
+            <span className="text-xs text-gray-300">
+              {user.all_units
+                ? "Todas las unidades"
+                : `${user.units?.length ?? 0} asignadas`}
+            </span>
+          </div>
+        </div>
+      </div>
+  )
 }
