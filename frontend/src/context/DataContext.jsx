@@ -19,6 +19,9 @@ export function DataProvider({ children }) {
   const [users, setUsers] = useState([]);
   const [usersLoading, setUsersLoading] = useState(false);
 
+  // audit Logs
+  const [auditLogs, setAuditLogs] = useState([]);
+
   // ====== use Memo
   const membersById = useMemo(() => {
       return Object.fromEntries(
@@ -55,6 +58,27 @@ export function DataProvider({ children }) {
   }, [data?.roles]);
   // FIN 
 
+  const fetchAuditLogs = async () => {
+    const response = await fetch(`${config.apiUrl}/audit_logs`, {
+      credentials: "include",
+    });
+
+    if (!response.ok) {
+      const result = await res.json().catch(() => ({}));
+      throw new Error(result.error || "Error al obtener los logs");
+    }
+    const result = await response.json();
+
+    if (!result.ok) {
+      throw new Error(
+        result.error || "Error al obtener los logs"
+      );
+    }
+
+    setAuditLogs(result.data ?? []);
+
+    return result.data;
+  };
 
   const fetchUsers = async () => {
     console.log('comenzando feth')
@@ -310,6 +334,8 @@ const updateEventAndAttendace = async (changes, eventId) => {
     fetchUsers,
     users,
     usersLoading,
+    auditLogs,
+    fetchAuditLogs
   };
 
   

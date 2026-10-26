@@ -8,6 +8,7 @@ import UsersTab from './tabs/UsersTab';
 import { useUser } from '../context/UserContext';
 import { useModal } from '../context/ModalContext';
 import { User } from '../entities/user.entity';
+import AuditLogsTab from './tabs/AuditLogsTab';
 
 
 
@@ -156,7 +157,7 @@ export default function DashboardPage() {
             {/* <TabBtn identify="meses" name="Meses" /> */}
             <TabBtn identify="miembros" name="Gestionar Miembros" permissionNeed='members.view'/>
             <TabBtn identify="users" name="Usuarios y Roles" permissionNeed='users.view'/>
-            <TabBtn identify="audit_logs" name="Logs" />
+            <TabBtn identify="audit_logs" name="Logs" permissionNeed={'audit_logs.view'} />
             <TabBtn identify="prox" name="Unidades y Parches" />
         </div>
 
@@ -165,6 +166,7 @@ export default function DashboardPage() {
         {activeTab === 'estadisticas' && <StatsTab />}
         {activeTab === 'miembros' && <MemberTab />}
         {activeTab === 'users' && <UsersTab />}
+        {activeTab === 'audit_logs' && <AuditLogsTab />}
         {activeTab === 'prox' && <NameTab />}
     </>
     );
