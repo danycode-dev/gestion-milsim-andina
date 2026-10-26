@@ -6,6 +6,7 @@ import TestModal from "./ModalTest";
 import MyUserModal from "./MyUserModal";
 import NewMemberModal from "./NewMemberModal";
 import NewUserModal from "./NewUserModal";
+import UserPermissionsModal from "./UserPermissionsModal";
 import ViewMemberModal from "./viewMemberModal";
 
 // Registro de modales
@@ -18,6 +19,7 @@ const modalComponents = {
     'new-user':NewUserModal,
     'my-user':MyUserModal,
     'confirm':ConfirmModal,
+    'user-permissions': UserPermissionsModal,
 };
 export default function ModalRenderer({children}) {
 

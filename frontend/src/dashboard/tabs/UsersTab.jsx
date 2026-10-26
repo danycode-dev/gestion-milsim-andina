@@ -202,6 +202,8 @@ function UserRow({
   rolesById
 
 }){
+  const { openModal } = useModal();
+
       // Acciones: modales aun no implementadas
     const newUserHandler = () => {
       openModal("new-user", {});
