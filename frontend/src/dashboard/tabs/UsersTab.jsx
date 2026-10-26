@@ -159,7 +159,7 @@ export default function UsersTab() {
         </div>
 
         {/* ESTADOS DE CARGA */}
-        {loading && (
+        {loading && (!users || users.length === 0) && (
           <p className="text-center text-gray-400 py-8">
             Cargando usuarios...
           </p>
@@ -172,7 +172,7 @@ export default function UsersTab() {
         )}
 
         {/* LISTADO */}
-        {!loading && !error && (
+        {(!loading || users?.length > 0) && !error && (
           <div className="space-y-3">
             {filteredUsers.map(user => (
               <UserRow key={`userRow${user.id}`} user={user} rolesById={rolesById} />
