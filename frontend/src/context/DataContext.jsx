@@ -209,7 +209,10 @@ const updateEventAndAttendace = async (changes, eventId) => {
         body: JSON.stringify(changes)
       });
       if (!res.ok) {
-        throw new Error(`Error ${res.status}: ${res.statusText}`);
+        const error = await res.json().catch(() => ({}));
+        throw new Error(
+          error.error || error.message || `Error ${res.status}: ${res.statusText}`
+        );
       }
       const data = await res.json();
       if (data?.ok === false) {
@@ -219,10 +222,7 @@ const updateEventAndAttendace = async (changes, eventId) => {
       return 
     }catch(e){
       console.error(e)
-      addGlobalAlert({
-        estado:ALERT_TYPES.ERROR,
-        msg : e.message
-      })
+      throw e
     }
   }
   const deleteMember = async (memberId) => {
@@ -233,7 +233,10 @@ const updateEventAndAttendace = async (changes, eventId) => {
     });
 
     if (!res.ok) {
-      throw new Error(`Error ${res.status}: ${res.statusText}`);
+      const error = await res.json().catch(() => ({}));
+      throw new Error(
+        error.error || error.message || `Error ${res.status}: ${res.statusText}`
+      );
     }
 
     const data = await res.json();
@@ -260,14 +263,23 @@ const updateEventAndAttendace = async (changes, eventId) => {
         },
         body: JSON.stringify(member)
       });
+      if (!res.ok){
+          const error = await res.json().catch(() => ({}));
+
+          throw new Error(
+            error.error || error.message || `Error ${res.status}: ${res.statusText}`
+          );
+      }
       const data = await res.json()
-      if(!res.ok || data?.ok===false){
-        throw new Error('error con la peticion')
+      if(data?.ok===false){
+        throw new Error(`${data.error|| data.message || 'Error con la peticion'} `)
       }  
       await reloadData()
+      return true
 
     }catch(e){
       console.error(e)
+      throw e
     }
   }
 
