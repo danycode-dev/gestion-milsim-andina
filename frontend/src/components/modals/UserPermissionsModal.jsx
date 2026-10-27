@@ -37,7 +37,8 @@ export default function UserPermissionsModal({ user }) {
         msg: "Rol del usuario actualizado"
       });
 
-      closeModal();
+
+      closeModal(true);
 
     } catch (e) {
       console.error(e);
