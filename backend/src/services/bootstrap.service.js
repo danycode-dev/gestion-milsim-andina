@@ -27,7 +27,21 @@ export async function getBootstrap() {
             client.query("SELECT id, name, short_name, logo_url FROM units"),
             client.query(`SELECT id, name FROM event_types;`),
             client.query(`SELECT member_id, event_type_id, total_present, total_absences, total_justified FROM events_member_type_stats;`),
-            client.query(`SELECT id, name FROM roles;`),
+            client.query(`
+                SELECT 
+                    roles.id, 
+                    roles.name,
+                    COALESCE(
+                        ARRAY_AGG(p.name) FILTER (WHERE p.name IS NOT NULL),
+                        ARRAY[]::TEXT[]
+                    ) AS permissions
+                FROM roles
+                LEFT JOIN role_permissions rp 
+                    ON rp.role_id = roles.id
+                LEFT JOIN permissions p 
+                    ON p.id = rp.permission_id
+                GROUP BY roles.id;
+            `),
             client.query(`SELECT id, name FROM permissions;`),
         ]);
         
