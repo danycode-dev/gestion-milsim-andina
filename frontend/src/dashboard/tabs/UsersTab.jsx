@@ -69,6 +69,9 @@ export default function UsersTab() {
   const newUserHandler = () => {
     openModal("new-user", {});
   };
+  const ManageRolesHandler = () => {
+    openModal("manage-roles", {});
+  };
 
   const editUserHandler = (user) => {
     openModal("edit-user", { user });
@@ -100,6 +103,12 @@ export default function UsersTab() {
             </p>
           </div>
 
+          <button
+            className="btn-primary bg-dashboard-button text-dashboard-text font-normal"
+            onClick={ManageRolesHandler}
+          >
+            Administrar Roles
+          </button>
           <button
             className="btn-primary"
             onClick={newUserHandler}

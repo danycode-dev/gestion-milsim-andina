@@ -2,6 +2,7 @@ import { useModal } from "../../context/ModalContext";
 import ConfirmModal from "./ConfirmModal";
 import EditMemberModal from "./EditMemberModal";
 import InsertFromIA from "./InsertFromIAModal";
+import ManageRolesModal from "./ManageRolesModal";
 import TestModal from "./ModalTest";
 import MyUserModal from "./MyUserModal";
 import NewMemberModal from "./NewMemberModal";
@@ -20,6 +21,7 @@ const modalComponents = {
     'my-user':MyUserModal,
     'confirm':ConfirmModal,
     'user-permissions': UserPermissionsModal,
+    'manage-roles':ManageRolesModal,
 };
 export default function ModalRenderer({children}) {
 
