@@ -19,6 +19,9 @@ export function DataProvider({ children }) {
   const [users, setUsers] = useState([]);
   const [usersLoading, setUsersLoading] = useState(false);
 
+  // audit Logs
+  const [auditLogs, setAuditLogs] = useState([]);
+
   // ====== use Memo
   const membersById = useMemo(() => {
       return Object.fromEntries(
@@ -55,6 +58,27 @@ export function DataProvider({ children }) {
   }, [data?.roles]);
   // FIN 
 
+  const fetchAuditLogs = async () => {
+    const response = await fetch(`${config.apiUrl}/audit_logs`, {
+      credentials: "include",
+    });
+
+    if (!response.ok) {
+      const result = await res.json().catch(() => ({}));
+      throw new Error(result.error || "Error al obtener los logs");
+    }
+    const result = await response.json();
+
+    if (!result.ok) {
+      throw new Error(
+        result.error || "Error al obtener los logs"
+      );
+    }
+
+    setAuditLogs(result.data ?? []);
+
+    return result.data;
+  };
 
   const fetchUsers = async () => {
     console.log('comenzando feth')
@@ -102,6 +126,33 @@ export function DataProvider({ children }) {
 
   return result;
   };
+  const updateUser = async (changes, userId)=>{
+    try {
+      const res = await fetch(`${config.apiUrl}/users/${userId}`, {
+        credentials: "include",
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(changes)
+      });
+      if (!res.ok) {
+        const error = await res.json().catch(() => ({}));
+        throw new Error(
+          error.error || error.message || `Error ${res.status}: ${res.statusText}`
+        );
+      }
+      const data = await res.json();
+      if (data?.ok === false) {
+        throw new Error(data.message || "Error con la petición");
+      }
+      fetchUsers()
+      return 
+    }catch(e){
+      console.error(e)
+      throw e
+    }
+  }
 	const loadAttendancebyId = async (eventId) => {
     console.log('loadAtendancebyID: ', eventId)
     try {
@@ -185,7 +236,10 @@ const updateEventAndAttendace = async (changes, eventId) => {
         body: JSON.stringify(changes)
       });
       if (!res.ok) {
-        throw new Error(`Error ${res.status}: ${res.statusText}`);
+        const error = await res.json().catch(() => ({}));
+        throw new Error(
+          error.error || error.message || `Error ${res.status}: ${res.statusText}`
+        );
       }
       const data = await res.json();
       if (data?.ok === false) {
@@ -195,10 +249,7 @@ const updateEventAndAttendace = async (changes, eventId) => {
       return 
     }catch(e){
       console.error(e)
-      addGlobalAlert({
-        estado:ALERT_TYPES.ERROR,
-        msg : e.message
-      })
+      throw e
     }
   }
   const deleteMember = async (memberId) => {
@@ -209,7 +260,10 @@ const updateEventAndAttendace = async (changes, eventId) => {
     });
 
     if (!res.ok) {
-      throw new Error(`Error ${res.status}: ${res.statusText}`);
+      const error = await res.json().catch(() => ({}));
+      throw new Error(
+        error.error || error.message || `Error ${res.status}: ${res.statusText}`
+      );
     }
 
     const data = await res.json();
@@ -236,14 +290,23 @@ const updateEventAndAttendace = async (changes, eventId) => {
         },
         body: JSON.stringify(member)
       });
+      if (!res.ok){
+          const error = await res.json().catch(() => ({}));
+
+          throw new Error(
+            error.error || error.message || `Error ${res.status}: ${res.statusText}`
+          );
+      }
       const data = await res.json()
-      if(!res.ok || data?.ok===false){
-        throw new Error('error con la peticion')
+      if(data?.ok===false){
+        throw new Error(`${data.error|| data.message || 'Error con la peticion'} `)
       }  
       await reloadData()
+      return true
 
     }catch(e){
       console.error(e)
+      throw e
     }
   }
 
@@ -310,6 +373,9 @@ const updateEventAndAttendace = async (changes, eventId) => {
     fetchUsers,
     users,
     usersLoading,
+    auditLogs,
+    fetchAuditLogs,
+    updateUser
   };
 
   

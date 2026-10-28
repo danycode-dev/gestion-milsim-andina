@@ -6,7 +6,7 @@ import { deleteMember, newMember, parcialUpdateMember } from "../services/member
 export async function memberPost(req, res) {
   /** @type {User | undefined} */
   const user = req.user
-  if (!user.permissions.includes('members.create')) return res.sendStatus(403);
+  if (!user.permissions.includes('members.create')) return res.status(403).json({ ok: false, error: "No tienes permiso para realizar esta acción." });
   try {
     if (!req.body || !req.body.nickname || !req.body.rank_id || !req.body.unit_id) {
       return res.status(400).json(
@@ -20,7 +20,7 @@ export async function memberPost(req, res) {
         }
       );
     }
-    const data = await newMember({nickname:req.body.nickname, rank_id:req.body.rank_id, unit_id:req.body.unit_id});
+    const data = await newMember({nickname:req.body.nickname, rank_id:req.body.rank_id, unit_id:req.body.unit_id}, user.id);
     res.json({ ok : true, data });
 
   } catch (err) {
@@ -32,7 +32,7 @@ export async function memberPost(req, res) {
 export async function patchMember(req, res){ 
   /** @type {User | undefined} */
   const user = req.user
-  if (!user.permissions.includes('members.edit')) return res.sendStatus(403);
+  if (!user.permissions.includes('members.edit')) return res.status(403).json({ ok: false, error: "No tienes permiso para realizar esta acción." });
   try{
 
 
@@ -59,7 +59,7 @@ export async function patchMember(req, res){
 
 
 		// service
-    const memberEdit = await parcialUpdateMember(val, memberId);
+    const memberEdit = await parcialUpdateMember(val, memberId, user.id);
 
     if (!memberEdit) {
       return res.status(404).json({
@@ -82,7 +82,7 @@ export async function deleteMemberController(req, res) {
   const user = req.user;
 
   if (!user.permissions.includes('members.delete')) {
-    return res.sendStatus(403);
+    return res.status(403).json({ ok: false, error: "No tienes permiso para realizar esta acción." });
   }
 
   try {
@@ -95,7 +95,7 @@ export async function deleteMemberController(req, res) {
       });
     }
 
-    const memberDelete = await deleteMember(memberId);
+    const memberDelete = await deleteMember(memberId, user.id);
 
     if (!memberDelete) {
       return res.status(404).json({

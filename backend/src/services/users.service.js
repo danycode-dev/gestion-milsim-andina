@@ -95,10 +95,22 @@ export async function newUser({
 export async function getUsers(search = "") {
   const result = await pool.query(
     `SELECT
-      id, username, email, role_id, active, all_units
-     FROM users
-     WHERE username ILIKE $1 OR email ILIKE $1
-     ORDER BY id ASC`,
+        u.id,
+        u.username,
+        u.email,
+        u.role_id,
+        u.active,
+        u.all_units,
+        COALESCE(
+          ARRAY_AGG(p.name) FILTER (WHERE p.name IS NOT NULL),
+          ARRAY[]::TEXT[]
+        ) AS permissions
+     FROM users u
+     LEFT JOIN role_permissions rp ON rp.role_id = u.role_id
+     LEFT JOIN permissions p ON p.id = rp.permission_id
+     WHERE u.username ILIKE $1 OR u.email ILIKE $1
+     GROUP BY u.id
+     ORDER BY u.id ASC`,
     [`%${search}%`]
   );
 
@@ -217,4 +229,186 @@ export async function changeUserPassword(
   } finally {
     client.release();
   }
+}
+
+
+
+/**
+ * Actualiza un usuario.
+ * Solo modifica los campos recibidos en changes.
+ *
+ * @param {Object} changes
+ * @param {number} userId
+ * @returns {Promise<Object>}
+ */
+export async function updateUser(changes, userId) {
+  const client = await pool.connect();
+
+  try {
+    await client.query("BEGIN");
+
+    const currentUser = await client.query(
+      `SELECT id FROM users WHERE id = $1 FOR UPDATE`,
+      [userId]
+    );
+
+    if (currentUser.rows.length === 0) {
+      throw new Error("Usuario no encontrado");
+    }
+
+    // Campos modificables directamente
+    const allowedFields = [
+      "username",
+      "email",
+      "role_id",
+      "active",
+      "all_units"
+    ];
+
+    const updates = [];
+    const values = [];
+
+    for (const field of allowedFields) {
+      if (changes[field] === undefined) continue;
+
+      values.push(changes[field]);
+      updates.push(`${field} = $${values.length}`);
+    }
+
+    // Validar que el rol exista
+    if (changes.role_id != null &&
+        changes.role_id !== undefined) {
+
+      const role = await client.query(
+        "SELECT id FROM roles WHERE id = $1",
+        [changes.role_id]
+      );
+
+      if (role.rows.length === 0) {
+        throw new Error("El rol seleccionado no existe");
+      }
+    }
+
+    // Actualizar campos principales
+    if (updates.length > 0) {
+      values.push(userId);
+
+      await client.query(
+        `UPDATE users
+         SET ${updates.join(", ")}
+         WHERE id = $${values.length}`,
+        values
+      );
+    }
+
+    // Actualizar permisos individuales
+    if (changes.permissions !== undefined) {
+      if (!Array.isArray(changes.permissions)) {
+        throw new Error("Los permisos deben ser un arreglo");
+      }
+
+      const permissions = [...new Set(changes.permissions)];
+
+      const validPermissions = await client.query(
+        `SELECT id, name
+         FROM permissions
+         WHERE name = ANY($1::text[])`,
+        [permissions]
+      );
+
+      if (validPermissions.rows.length !== permissions.length) {
+        throw new Error("Uno o más permisos no existen");
+      }
+
+      await client.query(
+        "DELETE FROM user_permissions WHERE user_id = $1",
+        [userId]
+      );
+
+      for (const permission of validPermissions.rows) {
+        await client.query(
+          `INSERT INTO user_permissions (user_id, permission_id)
+           VALUES ($1, $2)`,
+          [userId, permission.id]
+        );
+      }
+    }
+
+    // Actualizar unidades
+    if (changes.units !== undefined) {
+      if (!Array.isArray(changes.units)) {
+        throw new Error("Las unidades deben ser un arreglo");
+      }
+
+      const units = [...new Set(changes.units)];
+
+      const validUnits = await client.query(
+        `SELECT id
+         FROM units
+         WHERE id = ANY($1::integer[])`,
+        [units]
+      );
+
+      if (validUnits.rows.length !== units.length) {
+        throw new Error("Una o más unidades no existen");
+      }
+
+      await client.query(
+        "DELETE FROM user_units WHERE user_id = $1",
+        [userId]
+      );
+
+      for (const unit of validUnits.rows) {
+        await client.query(
+          `INSERT INTO user_units (user_id, unit_id)
+           VALUES ($1, $2)`,
+          [userId, unit.id]
+        );
+      }
+    }
+
+    // Obtener usuario actualizado
+    const result = await client.query(
+      `SELECT id, username, email, role_id, active, all_units
+       FROM users
+       WHERE id = $1`,
+      [userId]
+    );
+
+    await client.query("COMMIT");
+
+    return result.rows[0];
+
+  } catch (error) {
+    await client.query("ROLLBACK");
+    throw error;
+
+  } finally {
+    client.release();
+  }
+}
+
+
+
+
+/**
+ * Desactiva un usuario sin eliminarlo de la BD.
+ *
+ * @param {number} userId
+ * @returns {Promise<Object>}
+ */
+export async function deactivateUser(userId) {
+  const result = await pool.query(
+    `UPDATE users
+     SET active = FALSE
+     WHERE id = $1
+     RETURNING id, username, email, role_id, active, all_units`,
+    [userId]
+  );
+
+  if (result.rows.length === 0) {
+    throw new Error("Usuario no encontrado");
+  }
+
+  return result.rows[0];
 }

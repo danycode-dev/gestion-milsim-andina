@@ -1,4 +1,5 @@
 import pool from "../db/pool.js";
+import { createAuditLog } from "./auditLog.service.js";
 
 const ejemploBody = {} 
     
@@ -55,7 +56,8 @@ export async function newMember(
         nickname,
         rank_id,
         unit_id,
-    } 
+    },
+    idActor 
 ) {
     
     const client = await pool.connect();
@@ -63,6 +65,16 @@ export async function newMember(
         await client.query('BEGIN');
         const query = 'INSERT INTO members(nickname, rank_id, unit_id) VALUES($1, $2, $3) RETURNING *';
         const {rows} = await client.query(query, [member.nickname, member.rank_id, member.unit_id]);
+        await createAuditLog(client, {
+            actorId: idActor,
+            action: "member.create",
+            entityType: "member",
+            entityId: rows[0].id,
+            entityName: rows[0].nickname,
+            oldData: null,
+            newData: rows[0],
+            affectedMembers: [rows[0].id]
+        });
         await client.query('COMMIT');
         return rows[0];
 
@@ -80,7 +92,7 @@ export async function newMember(
 
 }
 
-export async function parcialUpdateMember(data, memberId) {
+export async function parcialUpdateMember(data, memberId, idActor) {
     const client = await pool.connect();
     const fields = []
     const values = []
@@ -95,6 +107,17 @@ export async function parcialUpdateMember(data, memberId) {
     }
     try{
         await client.query('BEGIN');
+
+        const oldResult = await client.query(
+            'SELECT * FROM members WHERE id = $1 AND deleted_at IS NULL FOR UPDATE',
+            [memberId]
+        );
+
+        if (oldResult.rows.length === 0) {
+            throw new Error("Miembro no encontrado");
+        }
+
+        const oldData = oldResult.rows[0];
         
         const query = `
             UPDATE members
@@ -104,6 +127,20 @@ export async function parcialUpdateMember(data, memberId) {
         `;
         
         const {rows} = await client.query(query, values);
+
+
+        
+        await createAuditLog(client, {
+            actorId:idActor,
+            action: "member.edit",
+            entityType: "member",
+            entityId: memberId,
+            entityName: rows[0].nickname,
+            oldData: oldData,
+            newData: rows[0],
+            affectedMembers:[memberId]
+        });
+        
         
         await client.query('COMMIT');
         return rows[0];
@@ -123,7 +160,7 @@ export async function parcialUpdateMember(data, memberId) {
     
 }
 
-export async function deleteMember(memberId) {
+export async function deleteMember(memberId, idActor) {
     
     const client = await pool.connect();
 
@@ -138,6 +175,20 @@ export async function deleteMember(memberId) {
         `;
         
         const {rows} = await client.query(query, [memberId]);
+        if (rows.length === 0) {
+            throw new Error("Miembro no encontrado o ya eliminado");
+        }
+
+        await createAuditLog(client, {
+            actorId: idActor,
+            action: "member.delete",
+            entityType: "member",
+            entityId: memberId,
+            entityName: rows[0].nickname,
+            oldData: null,
+            newData: null,
+            affectedMembers: [memberId]
+        });
         
         await client.query('COMMIT');
         return rows[0];

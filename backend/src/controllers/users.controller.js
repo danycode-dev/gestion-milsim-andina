@@ -1,6 +1,6 @@
 
 // crear user
-import { changeUserPassword, getUserById, getUsers, newUser } from "../services/users.service.js";
+import { changeUserPassword, deactivateUser, getUserById, getUsers, newUser, updateUser } from "../services/users.service.js";
 import { User } from "../entities/user.entity.js";
 
 // Crear usuario
@@ -222,6 +222,52 @@ export async function changePasswordController(req, res) {
     return res.status(500).json({
       ok: false,
       error: "Error interno al cambiar la contraseña"
+    });
+  }
+}
+
+export async function userPatchController(req, res) {
+  /** @type {User | undefined} */
+  const user = req.user
+  if (!user.permissions.includes('users.edit')) return res.sendStatus(403);
+  
+  try {
+    const { userId } = req.params;
+    const user = await updateUser(
+      req.body,
+      userId
+    );
+
+    return res.json({
+      ok: true,
+      data: user
+    });
+
+  } catch (error) {
+    return res.status(400).json({
+      ok: false,
+      message: error.message
+    });
+  }
+}
+
+export async function userDeactivateController(req, res) {
+  /** @type {User | undefined} */
+  const user = req.user
+  if (!user.permissions.includes('users.delete')) return res.sendStatus(403);
+  
+  try {
+    const user = await deactivateUser(req.params.userId);
+
+    return res.json({
+      ok: true,
+      data: user
+    });
+
+  } catch (error) {
+    return res.status(400).json({
+      ok: false,
+      message: error.message
     });
   }
 }

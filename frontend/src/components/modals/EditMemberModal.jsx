@@ -2,6 +2,7 @@
 import { useState } from "react";
 import { useDashboardData } from "../../context/DataContext";
 import { useModal } from "../../context/ModalContext";
+import { ALERT_TYPES, useAlertGlobal } from "../../context/AlertContext";
 
 export default function EditMemberModal({
     member = {
@@ -13,6 +14,7 @@ export default function EditMemberModal({
 }) {
   const {ranksById, dashboardData, isLoading, error, reloadData, membersById, updateMember } = useDashboardData();
 
+    const {addGlobalAlert} = useAlertGlobal();
     const { closeModal } = useModal();
     const [values, setValues] = useState(
         {
@@ -32,9 +34,17 @@ export default function EditMemberModal({
         console.log(changes)
         try{
             await updateMember(changes, member.id)
+            addGlobalAlert({
+                estado:ALERT_TYPES.SUCCESS,
+                msg: 'miembro actualizado'
+            })            
             closeModal('miembro actualizado')
         }catch(e){
             console.error(e)
+            addGlobalAlert({
+                estado:ALERT_TYPES.ERROR,
+                msg: e.message
+            })            
         }
     }
     const valueChangeHandler=(key, value)=>{

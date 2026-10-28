@@ -2,11 +2,13 @@
 import { useState } from "react";
 import { useDashboardData } from "../../context/DataContext";
 import { useModal } from "../../context/ModalContext";
+import { ALERT_TYPES, useAlertGlobal } from "../../context/AlertContext";
 
 export default function NewMemberModal({}
 ) {
     const {ranksById, dashboardData, isLoading, error, reloadData, membersById, updateMember, newMember } = useDashboardData();
     
+    const {addGlobalAlert} = useAlertGlobal();
     const member = {
         nickname: "",
         rank_id: "",
@@ -32,9 +34,18 @@ export default function NewMemberModal({}
         console.log(changes)
         try{
             await newMember(changes)
+            addGlobalAlert({
+                estado:ALERT_TYPES.SUCCESS,
+                msg: 'Miembro Creado'
+            })
             closeModal('Miembro Creado')
         }catch(e){
             console.error(e)
+            addGlobalAlert({
+                estado:ALERT_TYPES.ERROR,
+                msg: e.message
+            })
+            
         }
     }
     const valueChangeHandler=(key, value)=>{
