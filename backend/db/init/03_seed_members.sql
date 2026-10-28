@@ -14,23 +14,55 @@ INSERT INTO permissions (name) VALUES
 ('users.delete'),
 ('audit_logs.view');
 
-INSERT INTO roles (name) VALUES
-('admin'),
-('editor'),
-('Mando GAA'),
-('viewer');
+-- =========================================
+-- ROLES PREDETERMINADOS
+-- =========================================
 
+INSERT INTO roles (name)
+VALUES
+    ('Administrador'),
+    ('Gestor'),
+    ('Oficial de unidad'),
+    ('Registrador'),
+    ('Observador');
+
+
+-- =========================================
+-- PERMISOS POR ROL
+-- =========================================
+
+-- Administrador: todos los permisos
 INSERT INTO role_permissions (role_id, permission_id)
 SELECT r.id, p.id
 FROM roles r
 CROSS JOIN permissions p
-WHERE r.name = 'admin';
+WHERE r.name = 'Administrador';
 
+
+-- Gestor: administración de miembros y asistencias
 INSERT INTO role_permissions (role_id, permission_id)
 SELECT r.id, p.id
 FROM roles r
 CROSS JOIN permissions p
-WHERE r.name = 'editor'
+WHERE r.name = 'Gestor'
+AND p.name IN (
+    'members.view',
+    'members.create',
+    'members.edit',
+    'members.delete',
+    'attendance.view',
+    'attendance.create',
+    'attendance.edit',
+    'attendance.delete'
+);
+
+
+-- Oficial de unidad: gestión operativa
+INSERT INTO role_permissions (role_id, permission_id)
+SELECT r.id, p.id
+FROM roles r
+CROSS JOIN permissions p
+WHERE r.name = 'Oficial de unidad'
 AND p.name IN (
     'members.view',
     'members.create',
@@ -40,24 +72,27 @@ AND p.name IN (
     'attendance.edit'
 );
 
+
+-- Registrador: gestión de asistencias
 INSERT INTO role_permissions (role_id, permission_id)
 SELECT r.id, p.id
 FROM roles r
 CROSS JOIN permissions p
-WHERE r.name = 'Mando GAA'
+WHERE r.name = 'Registrador'
 AND p.name IN (
     'members.view',
-    'members.create',
     'attendance.view',
     'attendance.create',
     'attendance.edit'
 );
 
+
+-- Observador: solo lectura
 INSERT INTO role_permissions (role_id, permission_id)
 SELECT r.id, p.id
 FROM roles r
 CROSS JOIN permissions p
-WHERE r.name = 'viewer'
+WHERE r.name = 'Observador'
 AND p.name IN (
     'members.view',
     'attendance.view'
