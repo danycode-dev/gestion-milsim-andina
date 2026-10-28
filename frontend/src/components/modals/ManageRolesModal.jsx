@@ -250,7 +250,7 @@ export default function ManageRolesModal({
 
                   </div>
 
-                  <div className="space-y-2">
+                  <div className="flex flex-wrap gap-2">
 
                     {permissions.map(permission => {
 
@@ -264,16 +264,22 @@ export default function ManageRolesModal({
                       return (
                         <label
                           key={permissionName}
-                          className="flex items-center gap-3 bg-dashboard-item border border-dashboard-border rounded-lg px-3 py-3 cursor-pointer hover:border-dashboard-accent transition"
+                          className={`flex items-center gap-1 justify-center  m-0
+                            border border-dashboard-border rounded-lg px-2 py-1 cursor-pointer hover:border-dashboard-accent transition
+                            ${checked?'bg-dashboard-success/20':''}
+                          `}
                         >
 
                           <input
                             type="checkbox"
                             checked={checked}
                             onChange={() => togglePermission(permissionName)}
-                            className="accent-dashboard-accent"
+                            className="accent-dashboard-accent hidden"
                           />
-
+                          <span className={` text-sm shrink-0
+                            ${checked?'text-green-400':'text-red-400'}`}>
+                              {checked?'✓':'✕'}
+                            </span>
                           <span className="text-sm text-gray-300 break-all">
                             {permissionName}
                           </span>
