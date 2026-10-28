@@ -2,7 +2,7 @@ import { useMemo, useState } from "react";
 import { useDashboardData } from "../../context/DataContext";
 import { useModal } from "../../context/ModalContext";
 import { ALERT_TYPES, useAlertGlobal } from "../../context/AlertContext";
-
+import { motion, AnimatePresence } from "motion/react";
 export default function UserPermissionsModal({ user }) {
   const { dashboardData, rolesById, updateUser } = useDashboardData();
   const { closeModal } = useModal();
@@ -95,7 +95,7 @@ export default function UserPermissionsModal({ user }) {
                   {user.username?.charAt(0)?.toUpperCase() || "?"}
                 </div>
 
-                <div className="min-w-0">
+                <div className="min-w-0 flex flex-col items-start">
                   <p className="font-semibold text-gray-200">
                     {user.username}
                   </p>
@@ -124,7 +124,7 @@ export default function UserPermissionsModal({ user }) {
               <select
                 value={roleId ?? ""}
                 onChange={(e) => setRoleId(e.target.value)}
-                className="w-full py-2 bg-dashboard-item rounded-xs"
+                className="w-full py-2 px-2 bg-dashboard-item rounded-xs"
               >
                 <option value="" disabled>
                   Seleccione un rol
@@ -154,7 +154,7 @@ export default function UserPermissionsModal({ user }) {
               <div className="bg-dashboard-item px-4 py-3 flex items-center justify-between">
 
                 <h3 className="text-sm font-semibold text-gray-200">
-                  Permisos heredados
+                  Permisos del rol
                 </h3>
 
                 <span className="text-xs text-dashboard-accent">
@@ -165,14 +165,7 @@ export default function UserPermissionsModal({ user }) {
 
               <div className="p-4">
 
-                {!Array.isArray(selectedRole?.permissions) ? (
-
-                  <p className="text-sm text-gray-500 text-center py-4">
-                    La información de permisos de este rol
-                    todavía no está disponible.
-                  </p>
-
-                ) : permissions.length === 0 ? (
+                {permissions.length === 0 ? (
 
                   <p className="text-sm text-gray-500 text-center py-4">
                     Este rol no tiene permisos asignados.
@@ -180,33 +173,46 @@ export default function UserPermissionsModal({ user }) {
 
                 ) : (
 
-                  <div className="space-y-2">
-
-                    {permissions.map((permission, index) => {
-
-                      const permissionName =
-                        typeof permission === "string"
-                          ? permission
-                          : permission.name ?? permission.code ?? String(permission.id);
-
-                      return (
-                        <div
-                          key={index}
-                          className="flex items-center gap-3 bg-dashboard-card border border-dashboard-border rounded-lg px-3 py-2"
-                        >
-
-                          <span className="text-green-400 text-sm">
-                            ✓
-                          </span>
-
-                          <span className="text-sm text-gray-300 break-all">
-                            {permissionName}
-                          </span>
-
-                        </div>
-                      );
-                    })}
-
+                  <div className="flex flex-wrap gap-2">
+                    <AnimatePresence mode="popLayout">
+                      {permissions.map((permission) => {
+                        const permissionName = permission
+                      
+                      
+                        return (
+                          <motion.div
+                            key={permissionName}
+                        
+                            // Estado inicial 
+                            initial={{ opacity: 0, scale: 0.8, y: 10 }}
+                        
+                            // Estado final
+                            animate={{ opacity: 1, scale: 1, y: 0 }}
+                        
+                            // Animación cuando se elimina
+                            exit={{ opacity: 0, scale: 0.8, y: -10 }}
+                        
+                            // Anima cambios de posición
+                            layout
+                        
+                            transition={{
+                              duration: 0.25,
+                              ease: "easeOut",
+                            }}
+                          
+                            className="inline-flex items-center gap-2 bg-dashboard-success/20 border border-dashboard-border rounded-lg px-2 py-0 m-0"
+                          >
+                            <span className="text-green-400 text-sm shrink-0">
+                              ✓
+                            </span>
+                          
+                            <span className="text-sm text-gray-300 whitespace-nowrap">
+                              {permissionName}
+                            </span>
+                          </motion.div>
+                        );
+                      })}
+                    </AnimatePresence>
                   </div>
 
                 )}
