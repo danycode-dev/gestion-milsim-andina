@@ -110,7 +110,7 @@ INSERT INTO ranks (rank_name, display_order, short_name, plural_name) VALUES
 
 -- Unidades
 INSERT INTO units (id, name, short_name, logo_url) VALUES
-    (1, 'Unidad de Asalto Aereo Cuervo', 'U.A.A.C', NULL),
+    (1, 'Unidad de Asalto Aereo Cuervo', 'U.A.A.C', 'https://static.danycode.dev/logo/LOGO_UAAC.png'),
     (2, 'Grupo de Asalto Alacrán', 'G.A.A', 'https://static.danycode.dev/logo/LOGO_GAA.png'),
     (3, 'Grupo de Sabotaje Puma', 'G.S.P', 'https://static.danycode.dev/logo/LOGO_GSP.png');
 
