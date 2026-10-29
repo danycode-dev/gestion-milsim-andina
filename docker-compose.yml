@@ -59,7 +59,7 @@ services:
 
   db-backup:
     image: postgres:18.2
-    restart: unless-stopped
+    restart: on-failure
 
     environment:
       NODE_ENV: ${NODE_ENV:-development}
