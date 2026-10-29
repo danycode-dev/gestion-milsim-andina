@@ -4,46 +4,7 @@ import { createAuditLog } from "./auditLog.service.js";
 const ejemploBody = {} 
     
 
-//export async function newEvent(eventData) {
-//
-//    if (!eventData.name || !eventData.date) {
-//        throw new Error("Datos incompletos del evento");
-//    }
-//    eventData.description = eventData.description || "";
-//    const client = await pool.connect();
-//
-//    try {
-//        await client.query('BEGIN');
-//        
-//        const insertEventText = 'INSERT INTO events(name, description, event_date) VALUES($1, $2, $3) RETURNING id';
-//        const insertEventValues = [eventData.name, eventData.description, eventData.date];
-//        const res = await client.query(insertEventText, insertEventValues);
-//        const eventId = res.rows[0].id;
-//
-//        const insertAttendanceText = 'INSERT INTO event_attendance(event_id, member_id, status, justification) VALUES($1, $2, $3, $4)';
-//        for (const memberId in eventData.attendance) {
-//            console.log(eventData.attendance[memberId])
-//            const { estado, comentario } = eventData.attendance[memberId];
-//            const coment = estado === "J" ? comentario : "";
-//            console.log(`Insertando asistencia ${memberId}: estado=${estado}, comentario=${coment}`);
-//            const insertAttendanceValues = [eventId, memberId, trueValuesStatus(estado), coment];
-//            await client.query(insertAttendanceText, insertAttendanceValues);
-//        }
-//
-//        await client.query('COMMIT');
-//
-//
-//    return { eventId }
-//    } catch (error) {
-//        await client.query('ROLLBACK');
-//        console.error("Error creating event:", error);
-//        throw error;
-//    } finally {
-//        client.release();
-//    }
-//
-//
-//}
+
 
 const allowedFields = {
     nickname: 'nickname',

@@ -94,7 +94,6 @@ export function DataProvider({ children }) {
       }
     
       const result = await res.json();
-      console.log('users:', result.users)
       const usersArray = result.users.map(u => new User(u))
       console.log('userArray: ', usersArray)
       setUsers(usersArray);
@@ -328,7 +327,6 @@ const updateEventAndAttendace = async (changes, eventId) => {
       if (loadAttendancesforids.length > 0) {
         for (const eventId of loadAttendancesforids) {
           try {
-            console.log(`Loading attendance for event ${eventId} in fetchData...`);
             const attendanceRes = await fetch(`${config.apiUrl}/events/${eventId}/attendance`);
             if (!attendanceRes.ok) {
               throw new Error(`Error fetching attendance for event ${eventId}`);

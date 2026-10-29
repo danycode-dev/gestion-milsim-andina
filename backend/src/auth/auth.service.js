@@ -10,7 +10,6 @@ export async function authenticate(username, password) {
   let user
   try{
     const res = await client.query("SELECT id, username, password_hash, role_id, all_units, active, email FROM users WHERE username = $1", [username]);
-    console.log("authenticate result:", res);  
     if (res.rowCount === 0) return false;
     user = res.rows[0];
     if (!user.active) return false; // Check if the user is active
@@ -22,7 +21,7 @@ export async function authenticate(username, password) {
         password,
         user.password_hash
     );
-    //bcrypt.hash(password, 10).then(console.log)
+
     console.log("password match:", match);
     if (!match) return false;
     

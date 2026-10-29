@@ -69,7 +69,6 @@ export default function AttendanceTab({
   }
 //  usefect para  recargar el data  del current evento para que tenga los ultimos cambios en la asitencia si es que no se esta editando (para el proximo refactor  se simplificara)
 useEffect(() => {
-  console.log("useEffect: inicio, currentEvent:", currentEvent, "selectCurrentEvent:", selectCurrentEvent, "change:", change);
   if (currentEvent.isNew) return;
   if (change) return;
   if (!selectCurrentEvent || selectCurrentEvent === "new") return;

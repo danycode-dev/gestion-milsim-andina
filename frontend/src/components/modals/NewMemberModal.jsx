@@ -31,7 +31,6 @@ export default function NewMemberModal({}
             
             changes[keyValue] = values[keyValue]
         }
-        console.log(changes)
         try{
             await newMember(changes)
             addGlobalAlert({
