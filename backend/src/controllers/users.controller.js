@@ -1,6 +1,6 @@
 
 // crear user
-import { changeUserPassword, deactivateUser, getUserById, getUsers, newUser, updateUser } from "../services/users.service.js";
+import { changeUserPassword, deactivateUser, deleteUser, getUserById, getUsers, newUser, updateUser } from "../services/users.service.js";
 import { User } from "../entities/user.entity.js";
 
 // Crear usuario
@@ -257,11 +257,16 @@ export async function userDeactivateController(req, res) {
   if (!user.permissions.includes('users.delete')) return res.sendStatus(403);
   
   try {
-    const user = await deactivateUser(req.params.userId);
+    const data = await deleteUser(req.params.userId);
 
+    if (!data){
+      return res.status(400).json({
+        ok: false,
+        message: 'No se pudo eliminar'
+      });
+    }
     return res.json({
       ok: true,
-      data: user
     });
 
   } catch (error) {
