@@ -152,6 +152,32 @@ export function DataProvider({ children }) {
       throw e
     }
   }
+  const deleteUser = async (userId)=>{
+    try {
+      const res = await fetch(`${config.apiUrl}/users/${userId}`, {
+        credentials: "include",
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json"
+        },
+      });
+      if (!res.ok) {
+        const error = await res.json().catch(() => ({}));
+        throw new Error(
+          error.error || error.message || `Error ${res.status}: ${res.statusText}`
+        );
+      }
+      const data = await res.json();
+      if (data?.ok === false) {
+        throw new Error(data.message || "Error con la petición");
+      }
+      fetchUsers()
+      return 
+    }catch(e){
+      console.error(e)
+      throw e
+    }
+  }
 	const loadAttendancebyId = async (eventId) => {
     console.log('loadAtendancebyID: ', eventId)
     try {
@@ -373,7 +399,8 @@ const updateEventAndAttendace = async (changes, eventId) => {
     usersLoading,
     auditLogs,
     fetchAuditLogs,
-    updateUser
+    updateUser,
+    deleteUser
   };
 
   
