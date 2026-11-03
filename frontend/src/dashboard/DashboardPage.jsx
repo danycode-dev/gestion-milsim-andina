@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import AttendanceTab from './tabs/AttendanceTab';
 import { useDashboardData } from '../context/DataContext';
 import StatsTab from './tabs/StatsTab';
@@ -9,7 +9,7 @@ import { useUser } from '../context/UserContext';
 import { useModal } from '../context/ModalContext';
 import { User } from '../entities/user.entity';
 import AuditLogsTab from './tabs/AuditLogsTab';
-
+import packageInfo from "../../package.json";
 
 
 export default function DashboardPage() {
@@ -28,6 +28,34 @@ export default function DashboardPage() {
           <button disabled={block} className={`tab-btn disabled:opacity-60 disabled:hover:text-[#888] disabled:cursor-not-allowed ${activeTab === identify ? 'active' : ''}`} onClick={() => setActiveTab(`${identify}`)}>{name}</button>
       )
     }
+    const novedadesModalOpen= useRef(false)
+
+    const logicNovedades = async()=>{
+      console.log(novedadesModalOpen.current)
+      if(novedadesModalOpen.current) return
+      console.log('paso if: ', novedadesModalOpen.current)
+      novedadesModalOpen.current = true
+      const currentVersion = packageInfo.version;
+      const lastSeenVersion = localStorage.getItem(
+        "milsim_last_seen_version"
+      );
+    
+      const currentRelease = currentVersion.split(".").slice(0, 2).join(".");
+      const lastSeenRelease = lastSeenVersion?.split(".").slice(0, 2).join(".");
+    
+      if (currentRelease === lastSeenRelease) return;
+    
+      await openModal("whats-new", {
+        lastSeenVersion,
+        currentVersion
+      });
+      novedadesModalOpen.current = false
+      
+    }
+
+    useEffect(() => {
+      logicNovedades()
+    }, []);
 
   const viewUserHandler = () => {
     openModal("my-user", {});

@@ -1,0 +1,52 @@
+
+[
+  {
+    "version": "1.1.0",
+    "date": null,
+    "title": "Mejoras en la gestión del sistema",
+    "changes": [
+      {
+        "type": "feature",
+        "title": "Gestión de usuarios",
+        "description": "Se añaden las funciones para desactivar, activar o eliminar Usuarios."
+      },
+      {
+        "type": "feature",
+        "title": "Novedades",
+        "description": "Se añadio el sistema de Novedades, para que los usuarios puedan ver las nuevas funciones del sistema."
+      }
+    ]
+  },
+  {
+    "version": "1.0.0",
+    "date": "2026-11-01",
+    "title": "Sistema Base",
+    "changes": [
+      {
+        "type": "feature",
+        "title": "Gestión de miembros",
+        "description": "Administra los miembros, rangos y unidades."
+      },
+      {
+        "type": "feature",
+        "title": "Eventos y asistencias",
+        "description": "Crea eventos y registra la asistencia de los miembros."
+      },
+      {
+        "type": "feature",
+        "title": "Estadísticas",
+        "description": "Consulta las estadísticas de asistencia de los miembros."
+      },
+      {
+        "type": "feature",
+        "title": "Usuarios y permisos",
+        "description": "Gestiona usuarios y controla su acceso mediante roles y permisos."
+      },
+      {
+        "type": "feature",
+        "title": "Auditoría",
+        "description": "Consulta el historial de modificaciones realizadas en el sistema."
+      }
+    ]
+  }
+]
