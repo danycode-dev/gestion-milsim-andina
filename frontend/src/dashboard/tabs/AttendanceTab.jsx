@@ -3,6 +3,8 @@ import { useEffect, useState } from 'react'
 import { useDashboardData } from '../../context/DataContext';
 import { useModal } from '../../context/ModalContext';
 import { ALERT_TYPES, useAlertGlobal } from '../../context/AlertContext';
+import { User } from '../../entities/user.entity';
+import { useUser } from '../../context/UserContext';
 
 //NOTA: Este componente se volverá muy grande, se planea refactorisarlo en el futuro, 
 // se evitara usar inmutable data, el current event solo se usara para las nuevas asistencias, y se usara dashboardData para las asistencias existentes. y separar en componentes mas pequeño. 
@@ -46,6 +48,16 @@ export default function AttendanceTab({
   const [currentEvent, setCurrentEvent] = useState(structuredClone(newDefEvent));
   const [selectCurrentEvent, setSelectCurrentEvent] = useState('new');
   const {addGlobalAlert, toggleGlobalLoading} = useAlertGlobal();
+
+  /** @type {{ user: User | undefined }} */
+  const { user:selfUser } = useUser();
+
+  const openProfile = async(member) => {
+    if(!selfUser.hasPermission('members.view')) return
+    await openModal('view-member',{
+      member
+    })
+  };
   
   // funcion para abrir el modal de IA
   const prompIaHandler = async()=>{
@@ -872,7 +884,12 @@ return (
                               </div>
                               
                               {/* short rank y name */}
-                              <div className='text-sm font-semibold text-gray-300 truncate'>
+                              <button onClick={()=>{openProfile(member)}} 
+                              className='text-sm font-semibold text-gray-300 truncate
+                              hover:text-(--accent-color) transition cursor-pointer
+                              hover:scale-105
+                              '
+                              >
                                 <span className='text-gray-500'>
                                   {rank.short_name !== ""
                                   ? `[${rank.short_name}] `
@@ -883,7 +900,7 @@ return (
                                   {member.nickname}
 
                                 </span>
-                              </div>
+                              </button>
 
                               {/* unidad  */}
                               {unitsById[member.unit_id]?.logo_url && (
@@ -900,7 +917,7 @@ return (
                                     overflow-hidden
                                     transition
                                     hover:border-(--accent-color)
-                                    hover:scale-110
+                                    hover:scale-120
                                   "
                                   title={unitsById[member.unit_id]?.name || "Unidad"}
                                 >

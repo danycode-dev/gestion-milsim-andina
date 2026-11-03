@@ -2,7 +2,7 @@
 [
   {
     "version": "1.1.0",
-    "date": null,
+    "date": "2026-11-03",
     "title": "Mejoras en la gestión del sistema",
     "changes": [
       {
@@ -19,6 +19,11 @@
         "type": "enhancement",
         "title": "Mejoras en el login y manejo de errores",
         "description": "Se mejoró la experiencia del usuario y se implementó una lógica de login más robusta."
+      },
+      {
+        "type": "feature",
+        "title": "Visualización de miebros en estadisticas y asistencias",
+        "description": "Se implemento la modal de visualización de miembros en las secciones de estadisticas y asistencias al seleccionar un miembro."
       }
     ]
   },

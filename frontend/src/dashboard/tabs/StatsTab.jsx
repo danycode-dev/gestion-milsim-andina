@@ -1,15 +1,22 @@
 
 import { useMemo, useState } from "react";
 import { useDashboardData } from "../../context/DataContext";
+import { useModal } from "../../context/ModalContext";
+import { User } from "../../entities/user.entity";
+import { useUser } from "../../context/UserContext";
 
 export default function StatsTab() {
-  const { dashboardData, isLoading, error } = useDashboardData();
+  const { dashboardData, isLoading, error, membersById} = useDashboardData();
 
   // "all" = estadísticas generales
   const [selectedType, setSelectedType] = useState("all");
   const [search, setSearch] = useState("");
 
   const [visibleUnitIds, setVisibleUnitIds] = useState([]);
+  const { openModal } = useModal()
+
+  /** @type {{ user: User | undefined }} */
+  const { user:selfUser } = useUser();
 
   const toggleUnitFilter = (unitId) => {
     setVisibleUnitIds(prev =>
@@ -25,8 +32,11 @@ export default function StatsTab() {
   const members = dashboardData?.members || [];
   const units = dashboardData?.units || [];
 
-  const openProfile = () => {
-    // TODO: implementar modal de perfil
+  const openProfile = async(member) => {
+    if(!selfUser.hasPermission('members.view'))return
+    await openModal('view-member',{
+      member
+    })
   };
 
   const getStats = (member) => {
@@ -389,7 +399,7 @@ export default function StatsTab() {
                             <td className="px-5 py-3">
                               <button
                                 type="button"
-                                onClick={() => openProfile(member, rank.id)}
+                                onClick={() => openProfile(member)}
                                 className="
                                   flex items-center gap-3
                                   text-left group cursor-pointer
