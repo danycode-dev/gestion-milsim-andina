@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useUser } from "../context/UserContext";
+import { ALERT_TYPES, useAlertGlobal } from "../context/AlertContext";
 
 
 
@@ -7,10 +8,20 @@ export default function AuthForm() {
     const { AuthLogin } = useUser();
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
+    const { addGlobalAlert } = useAlertGlobal(); 
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        await AuthLogin(username, password);
+        try {
+            await AuthLogin(username, password);
+        }catch(err){
+
+            addGlobalAlert({
+                estado:ALERT_TYPES.ERROR,
+                msg:`Error: ${err.message}`
+            })
+
+        }
     }
 
     return (

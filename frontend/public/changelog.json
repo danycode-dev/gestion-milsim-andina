@@ -14,6 +14,11 @@
         "type": "feature",
         "title": "Novedades",
         "description": "Se añadio el sistema de Novedades, para que los usuarios puedan ver las nuevas funciones del sistema."
+      },
+      {
+        "type": "enhancement",
+        "title": "Mejoras en el login y manejo de errores",
+        "description": "Se mejoró la experiencia del usuario y se implementó una lógica de login más robusta."
       }
     ]
   },
