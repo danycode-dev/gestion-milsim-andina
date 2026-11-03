@@ -24,7 +24,7 @@ app.use(cors({
 //}));
 if (config.nodeEnv === "development") {
   app.use((req, res, next) => {
-    const delay = Math.floor(Math.random() * 2501) + 200;
+    const delay = Math.floor(Math.random() * 1000) + 200;
     setTimeout(next, delay);
   });
 }
