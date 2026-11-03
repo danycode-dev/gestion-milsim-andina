@@ -4,6 +4,7 @@ import { useDashboardData } from "../../context/DataContext";
 import { useModal } from "../../context/ModalContext";
 import { User } from "../../entities/user.entity";
 import { useUser } from "../../context/UserContext";
+import { ALERT_TYPES, useAlertGlobal } from "../../context/AlertContext";
 
 export default function UsersTab() {
   const { users, fetchUsers, rolesById, updateUser, deleteUser } = useDashboardData();
@@ -209,7 +210,7 @@ function UserRow({
   /** @type {{ user: User | undefined }} */
   const { user:selfUser } = useUser();
   const { openModal } = useModal();
-
+  const { addGlobalAlert } = useAlertGlobal(); 
       // Acciones: modales aun no implementadas
   const newUserHandler = () => {
     openModal("new-user", {});
