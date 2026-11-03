@@ -11,6 +11,7 @@ export async function getBootstrap() {
                     m.rank_id,
                     m.unit_id,
                     m.join_date,
+                    m.nationality_code,
                     s.consecutive_absences,
                     s.events_attended,
                     s.total_present,
@@ -99,6 +100,7 @@ export async function getBootstrap() {
                 rank_id:member.rank_id,
                 rank_name: rankMap[member.rank_id] || "Unknown",  //  quitar esto despues
                 join_date:member.join_date,
+                nationality_code:member.nationality_code,
                 unit_id:member.unit_id,
                 stats:stats,
                 type_stats: typeStatsMap[member.id] || {}

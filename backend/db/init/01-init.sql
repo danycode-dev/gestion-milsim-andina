@@ -79,7 +79,8 @@ CREATE TABLE members (
     rank_id INTEGER,
     unit_id INTEGER,
     join_date DATE,
-    country TEXT,
+    nationality_code TEXT DEFAULT NULL    --ISO 3166-1 alpha-2 code, ejemplo: 'US', 'ES', 'FR', etc.
+    CHECK (nationality_code ~ '^[A-Z]{2}$'),
     birth_date DATE,
     deleted_at TIMESTAMP DEFAULT NULL,
 
