@@ -1,6 +1,6 @@
 
 import { createContext, useContext, useState } from "react";
-
+import { v4 as uuidv4 } from "uuid";
 const ModalContext = createContext(null);
 
 
@@ -17,7 +17,7 @@ export function ModalProvider({ children }) {
             setModalStack((currentStack) => [
                 ...currentStack,
                 {
-                    id: crypto.randomUUID(),
+                    id: uuidv4(),
                     type,
                     props,
                     resolve

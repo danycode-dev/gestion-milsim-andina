@@ -94,7 +94,6 @@ export function DataProvider({ children }) {
       }
     
       const result = await res.json();
-      console.log('users:', result.users)
       const usersArray = result.users.map(u => new User(u))
       console.log('userArray: ', usersArray)
       setUsers(usersArray);
@@ -135,6 +134,32 @@ export function DataProvider({ children }) {
           "Content-Type": "application/json"
         },
         body: JSON.stringify(changes)
+      });
+      if (!res.ok) {
+        const error = await res.json().catch(() => ({}));
+        throw new Error(
+          error.error || error.message || `Error ${res.status}: ${res.statusText}`
+        );
+      }
+      const data = await res.json();
+      if (data?.ok === false) {
+        throw new Error(data.message || "Error con la petición");
+      }
+      fetchUsers()
+      return 
+    }catch(e){
+      console.error(e)
+      throw e
+    }
+  }
+  const deleteUser = async (userId)=>{
+    try {
+      const res = await fetch(`${config.apiUrl}/users/${userId}`, {
+        credentials: "include",
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json"
+        },
       });
       if (!res.ok) {
         const error = await res.json().catch(() => ({}));
@@ -328,7 +353,6 @@ const updateEventAndAttendace = async (changes, eventId) => {
       if (loadAttendancesforids.length > 0) {
         for (const eventId of loadAttendancesforids) {
           try {
-            console.log(`Loading attendance for event ${eventId} in fetchData...`);
             const attendanceRes = await fetch(`${config.apiUrl}/events/${eventId}/attendance`);
             if (!attendanceRes.ok) {
               throw new Error(`Error fetching attendance for event ${eventId}`);
@@ -375,7 +399,8 @@ const updateEventAndAttendace = async (changes, eventId) => {
     usersLoading,
     auditLogs,
     fetchAuditLogs,
-    updateUser
+    updateUser,
+    deleteUser
   };
 
   

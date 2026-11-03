@@ -2,6 +2,8 @@
 import { useState } from "react";
 import { useDashboardData } from "../../context/DataContext";
 import { useModal } from "../../context/ModalContext";
+import { User } from "../../entities/user.entity";
+import { useUser } from "../../context/UserContext";
 
 export default function ViewMemberModal({
 
@@ -18,6 +20,9 @@ export default function ViewMemberModal({
     
      console.log(currentMember)
     const { closeModal, openModal } = useModal();
+
+    /** @type {{ user: User | undefined }} */
+    const { user:selfUser } = useUser();
 
     const summitHandler = async ()=>{
         openModal('edit-member',{member: currentMember})
@@ -179,12 +184,12 @@ export default function ViewMemberModal({
                     </button>
 
                     <button 
-                        disabled={false}
+                        disabled={!selfUser.hasPermission('members.edit')}
                         onClick={() => summitHandler()}
                         className={`
                             btn-primary 
                             
-                            ${true ? '':'cursor-not-allowed opacity-35'}`}
+                            ${selfUser.hasPermission('members.edit') ? '':'cursor-not-allowed opacity-35'}`}
                     >
                         Editar Miembro
                     </button>

@@ -7,6 +7,7 @@ import { useUser } from './context/UserContext';
 import AuthForm from './auth/AuthForm';
 import { ModalProvider } from './context/ModalContext';
 import ModalRenderer from './components/modals/ModalRenderer';
+import { CircularProgress } from '@mui/material';
 
 
 // NOTA: MIGRANDO DESDE CODIGO LEGACY A REACT
@@ -16,24 +17,32 @@ function App() {
 
   
 
-    // codigo legacy, no está activo, solo de referencia para migrar a react. Se puede eliminar después de migrar todo a react sin problemas.
 
 
 
   return (
-    <>  {isLoading? <div className='loading text-xl'>Cargando...</div>: error?<div className='error'>Error: {error.message}</div>:''}
+    <>  
+    {isLoading ? 
+        <div className={`
+        absolute p-2
+        bg-dashboard-button/5
+        top-0 left-0
+        flex justify-center items-center
+        rounded-lg
+        `}>
+            <CircularProgress size={70} thickness={6}  className=''/>
+        </div>
+        : error ? <div className='error'>Error: {error.message}</div>:''}
+
+        {false ? null :
+        
         <div className="container md:p-2">
             {
                 !user ? <AuthForm />:<DataProvider><ModalProvider> <ModalRenderer></ModalRenderer> <DashboardPage /></ModalProvider> </DataProvider>
             }
-            
-
-
-            
-
-
 
         </div>
+        }
 
 
     </>

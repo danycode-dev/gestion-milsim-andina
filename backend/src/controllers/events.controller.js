@@ -42,7 +42,6 @@ export async function getAttendance(req, res) {
       return res.status(400).json({ ok: false, error: "Falta el ID del evento" });
     }
     const data = await getAttendanceByEventId(eventId);
-    console.log("Attendance data to return:", data);
     res.json({ ok: true, data: data });
   } catch (err) {
     console.error(err);

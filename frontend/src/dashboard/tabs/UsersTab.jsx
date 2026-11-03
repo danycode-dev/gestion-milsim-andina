@@ -2,9 +2,12 @@
 import { useEffect, useMemo, useState } from "react";
 import { useDashboardData } from "../../context/DataContext";
 import { useModal } from "../../context/ModalContext";
+import { User } from "../../entities/user.entity";
+import { useUser } from "../../context/UserContext";
+import { ALERT_TYPES, useAlertGlobal } from "../../context/AlertContext";
 
 export default function UsersTab() {
-  const { users, fetchUsers, rolesById } = useDashboardData();
+  const { users, fetchUsers, rolesById, updateUser, deleteUser } = useDashboardData();
   const { openModal } = useModal();
 
   const [search, setSearch] = useState("");
@@ -73,21 +76,7 @@ export default function UsersTab() {
     openModal("manage-roles", {});
   };
 
-  const editUserHandler = (user) => {
-    openModal("edit-user", { user });
-  };
 
-  const viewUserHandler = (user) => {
-    openModal("view-user", { user });
-  };
-
-  const permissionsHandler = (user) => {
-    openModal("user-permissions", { user });
-  };
-
-  const toggleUserHandler = (user) => {
-    openModal("toggle-user-status", { user });
-  };
 
 
   return (
@@ -184,7 +173,12 @@ export default function UsersTab() {
         {(!loading || users?.length > 0) && !error && (
           <div className="space-y-3">
             {filteredUsers.map(user => (
-              <UserRow key={`userRow${user.id}`} user={user} rolesById={rolesById} />
+              <UserRow key={`userRow${user.id}`} 
+                user={user} 
+                rolesById={rolesById} 
+                updateUser={updateUser}
+                deleteUser={deleteUser}
+              />
             ))}
 
             {/* LISTA VACÍA */}
@@ -208,11 +202,15 @@ export default function UsersTab() {
 
 function UserRow({
   user,
-  rolesById
+  rolesById,
+  updateUser,
+  deleteUser
 
 }){
+  /** @type {{ user: User | undefined }} */
+  const { user:selfUser } = useUser();
   const { openModal } = useModal();
-
+  const { addGlobalAlert } = useAlertGlobal(); 
       // Acciones: modales aun no implementadas
   const newUserHandler = () => {
     openModal("new-user", {});
@@ -226,8 +224,52 @@ function UserRow({
   const permissionsHandler = (user) => {
     openModal("user-permissions", { user });
   };
-  const toggleUserHandler = (user) => {
-    openModal("toggle-user-status", { user });
+  const toggleUserHandler = async (user) => {
+        if (!selfUser.hasPermission('users.edit')){
+          return addGlobalAlert({
+            estado:ALERT_TYPES.ERROR,
+            msg: "No tienes permisos para desactivar o activar este usuario"
+          })
+          
+        }
+        if(user.id === selfUser.id){
+          const confirmed = await openModal("confirm", {
+            title: "Desactivar Cuenta",
+            message: `¿Estás seguro de que quieres desactivar tu cuenta?`,
+            confirmText: "Desactivar",
+            danger: true
+          });
+          if (!confirmed) return;
+        }
+        updateUser(
+          {
+            active:!user.active
+          },
+          user.id
+      )
+
+  };
+    const delUserHandler = async (user) => {
+        if (!selfUser.hasPermission('users.delete')){
+          return addGlobalAlert({
+            estado:ALERT_TYPES.ERROR,
+            msg: "No tienes permisos para eliminar este usuario"
+          })
+          
+        }
+
+          const confirmed = await openModal("confirm", {
+            title: "Eliminar Cuenta",
+            message: `¿Estás seguro de que quieres ELIMINAR a ${user.username}?`,
+            confirmText: "Eliminar",
+            danger: true
+          });
+          if (!confirmed) return;
+
+        deleteUser(
+          user.id
+      )
+
   };
   return(
       <div
@@ -287,11 +329,29 @@ function UserRow({
               Permisos
             </button>
             <button
-              className="px-3 py-2 text-xs rounded bg-red-900/30 text-red-400 hover:bg-red-900/50 border border-red-900 transition"
+              className={`px-3 py-2 text-xs rounded 
+                  border
+                ${
+                    !user.active
+                      ? "bg-green-900/30 text-green-400 border-green-800 hover:bg-green-900/60"
+                      : "bg-red-900/30 text-red-400 border-red-900 hover:bg-red-900/60"
+                  } 
+                transition`}
               onClick={() => toggleUserHandler(user)}
             >
               {user.active ? "Desactivar" : "Activar"}
             </button>
+            {
+              user.active?'':            <button
+              className={`px-3 py-2 text-xs rounded 
+                  border
+    bg-red-900/30 text-red-400 border-red-900 hover:bg-red-900/60
+                transition`}
+              onClick={() => delUserHandler(user)}
+            >
+              Eliminar
+            </button>
+            }
           </div>
         </div>
         {/* PERMISOS Y UNIDADES */}

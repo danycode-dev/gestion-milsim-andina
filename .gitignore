@@ -17,4 +17,6 @@ logs
 
 *.env
 
-./data/
+# PostgreSQL y backups
+/data/
+/backups/

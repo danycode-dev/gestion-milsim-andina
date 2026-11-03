@@ -412,3 +412,20 @@ export async function deactivateUser(userId) {
 
   return result.rows[0];
 }
+
+
+/**
+ * borrar un usuario de la BD.
+ *
+ * @param {number} userId
+ * @returns {Promise<boolean>}
+ */
+export async function deleteUser(userId) {
+  const result = await pool.query(
+    `
+    DELETE FROM users
+     WHERE id = $1;`,
+    [userId]
+  );
+    return result.rowCount > 0;
+}

@@ -8,6 +8,7 @@ import usersRoutes from "./routes/users.routes.js"
 import cors from "cors";
 import cookieParser from "cookie-parser";
 import { initAdmUser } from "./services/initAdmUser.js";
+import { config } from "./config/env.js";
 
 const app = express();
 
@@ -21,7 +22,12 @@ app.use(cors({
 //  origin: "http://127.0.0.1:5173", 
 //  credentials: true
 //}));
-
+if (config.nodeEnv === "development") {
+  app.use((req, res, next) => {
+    const delay = Math.floor(Math.random() * 1000) + 200;
+    setTimeout(next, delay);
+  });
+}
 app.use(express.json());
 app.use(cookieParser());
 initAdmUser()

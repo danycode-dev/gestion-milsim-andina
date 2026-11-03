@@ -57,20 +57,28 @@ const changePassword = async (values) => {
       });
 
       if (!res.ok) {
-        const errorData = await res.json();
-        setError(errorData.message || "Error during login");
-        return false;
+        const error = await res.json().catch(() => ({}));
+        if (res.status === 401) {
+          throw new Error("Usuario o contraseña incorrectos");
+        }
+        throw new Error(
+          (error.error  || error.message || `Error `)+`  Code: ${res.status}: ${res.statusText}`
+        );
       }
 
       const data = await res.json();
+      if (data?.ok === false) {
+        
+        throw new Error(data.error || data.message || "Error con la petición");
+      }
       console.log("Login successful:", data);
       const user = new User(data.user);
       setUser(user);
       return true;
+
     } catch (err) {
       console.error("Login error:", err);
-      setError("Network error during login");
-      return false;
+      throw err;
     }
     finally {
       setIsLoading(false);

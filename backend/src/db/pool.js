@@ -5,7 +5,7 @@ const { Pool } = pkg;
 
 const pool = new Pool({
   connectionString: config.db.url,
-
+  min: 3,
   max: 10,
   connectionTimeoutMillis: 5000,
   idleTimeoutMillis: 30000,
@@ -49,7 +49,7 @@ pool.on("error", (error) => {
 // Estadísticas 
 const monitor = setInterval(() => {
   logPool("Estado");
-}, 1000*60*5);
+}, 1000*60*60);
 
 monitor.unref();
 

@@ -45,13 +45,14 @@ export async function patchMember(req, res){
 
     const val = req.body;
     
-    if (!val.nickname && !val.rank_id) {
+    if (!val.nickname && !val.rank_id && !val.unit_id) {
       return res.status(400).json(
         { 
           ok: false, error: "Datos incompletos del evento tiene que haber porlomenos un parametro a cambiar",
           example: {
             "nickname": "Raul",
             "rank_id": 5,
+            "unit_id":1,
           }
         }
       );
