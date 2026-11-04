@@ -1,5 +1,6 @@
 import { User } from "../entities/user.entity.js";
 import { deleteMember, newMember, parcialUpdateMember } from "../services/members.service.js";
+import { isValidJoinDate, isValidNationalityCode } from "../utils/validators.js";
 
 
 // crear miembros
