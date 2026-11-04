@@ -6,76 +6,166 @@ import { deleteMember, newMember, parcialUpdateMember } from "../services/member
 export async function memberPost(req, res) {
   /** @type {User | undefined} */
   const user = req.user
-  if (!user.permissions.includes('members.create')) return res.status(403).json({ ok: false, error: "No tienes permiso para realizar esta acción." });
+  if (!user.permissions.includes('members.create')) {
+    return res.status(403).json({
+      ok: false,
+      error: "No tienes permiso para realizar esta acción."
+    });
+  }
+
   try {
-    if (!req.body || !req.body.nickname || !req.body.rank_id || !req.body.unit_id) {
-      return res.status(400).json(
-        { 
-          ok: false, error: "Datos incompletos",
-          example: {
-            "nickname": "Vicente",
-            "rank_id": 5,
-            "unit_id":6,
-          }
+    const {
+      nickname,
+      rank_id,
+      unit_id,
+      join_date = null,
+      nationality_code = null
+    } = req.body ?? {};
+
+    if (!nickname || !rank_id || !unit_id) {
+      return res.status(400).json({
+        ok: false,
+        error: "Datos incompletos",
+        example: {
+          nickname: "Vicente",
+          rank_id: "4",
+          unit_id: "2",
+          join_date: "2026-11-03",
+          nationality_code: "CL"
         }
-      );
+      });
     }
-    const data = await newMember({nickname:req.body.nickname, rank_id:req.body.rank_id, unit_id:req.body.unit_id}, user.id);
-    res.json({ ok : true, data });
+
+    if (!isValidJoinDate(join_date)) {
+      return res.status(400).json({
+        ok: false,
+        error: "join_date debe ser una fecha válida con formato YYYY-MM-DD"
+      });
+    }
+
+    if (!isValidNationalityCode(nationality_code)) {
+      return res.status(400).json({
+        ok: false,
+        error: "nationality_code debe contener dos letras mayúsculas, por ejemplo CL"
+      });
+    }
+
+    const data = await newMember({
+      nickname,
+      rank_id,
+      unit_id,
+      join_date,
+      nationality_code
+    }, user.id);
+
+    return res.json({ ok: true, data });
 
   } catch (err) {
     console.error(err);
-    res.status(500).json({ ok: false, error: "internal error" });
+    return res.status(500).json({ ok: false, error: "internal error" });
   }
 }
 // editar miembros
 export async function patchMember(req, res){ 
   /** @type {User | undefined} */
   const user = req.user
-  if (!user.permissions.includes('members.edit')) return res.status(403).json({ ok: false, error: "No tienes permiso para realizar esta acción." });
-  try{
-
-
+  if (!user.permissions.includes('members.edit')) {
+    return res.status(403).json({
+      ok: false,
+      error: "No tienes permiso para realizar esta acción."
+    });
+  }
+  try {
     const { memberId } = req.params;
-    if (!memberId) return res.status(400).json({ok:false, error:'falta el memberId'})
+    if (!memberId) {
+      return res.status(400).json({
+        ok: false,
+        error: "Falta el memberId"
+      });
+    }
 
-    if (!req.body) {
-      return res.status(400).json({ ok: false, error: "Body requerido" });
+    if (!req.body || typeof req.body !== "object" || Array.isArray(req.body)) {
+      return res.status(400).json({
+        ok: false,
+        error: "Body requerido"
+      });
     }
 
     const val = req.body;
-    
-    if (!val.nickname && !val.rank_id && !val.unit_id) {
-      return res.status(400).json(
-        { 
-          ok: false, error: "Datos incompletos del evento tiene que haber porlomenos un parametro a cambiar",
-          example: {
-            "nickname": "Raul",
-            "rank_id": 5,
-            "unit_id":1,
-          }
+    const allowedFields = [
+      "nickname",
+      "rank_id",
+      "unit_id",
+      "join_date",
+      "nationality_code"
+    ];
+    const hasChanges = allowedFields.some(field =>
+      Object.hasOwn(val, field)
+    );
+    if (!hasChanges) {
+      return res.status(400).json({
+        ok: false, error: "Debe proporcionar al menos un campo para actualizar",
+        example: {
+          nickname: "Raul",
+          rank_id: "4",
+          unit_id: "1",
+          join_date: "2026-11-03",
+          nationality_code: "CL"
         }
-      );
+      });
     }
 
+    if (
+      Object.hasOwn(val, "join_date") &&
+      !isValidJoinDate(val.join_date)
+    ) {
+      return res.status(400).json({
+        ok: false,
+        error: "join_date debe ser una fecha válida con formato YYYY-MM-DD"
+      });
+    }
 
-		// service
-    const memberEdit = await parcialUpdateMember(val, memberId, user.id);
+    if (
+      Object.hasOwn(val, "nationality_code") &&
+      !isValidNationalityCode(val.nationality_code)
+    ) {
+      return res.status(400).json({
+        ok: false,
+        error: "nationality_code debe contener dos letras mayúsculas, por ejemplo CL"
+      });
+    }
+
+    // Filtrar campos permitidos
+    const changes = Object.fromEntries(
+      Object.entries(val).filter(([key]) =>
+        allowedFields.includes(key)
+      )
+    );
+
+    // Service
+    const memberEdit = await parcialUpdateMember(
+      changes,
+      memberId,
+      user.id
+    );
 
     if (!memberEdit) {
       return res.status(404).json({
         ok: false,
-        error: 'Miembro no encontrado'
+        error: "Miembro no encontrado"
       });
     }
 
     return res.json({ ok: true });
 
+  } catch (err) {
+    console.error(err);
 
-  }catch(e){
-		return res.status(500).json({ ok: false, error: "Error inesperado en api" });
-	}
-
+    return res.status(500).json({
+      ok: false,
+      error: "Error inesperado en api"
+    });
+  }
 }
 
 export async function deleteMemberController(req, res) {
