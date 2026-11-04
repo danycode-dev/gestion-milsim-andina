@@ -1,13 +1,13 @@
 # Pendientes
 
-- [ ] Agregar endpoint y botón para eliminar miembros de forma lógica.
-- [ ] Permitir editar la unidad de cada miembro.
+- [x] Agregar endpoint y botón para eliminar miembros de forma lógica.
+- [x] Permitir editar la unidad de cada miembro.
 - [ ] Ampliar la información de los miembros: fecha de ingreso, anotaciones, país, etc.
 - [ ] Agregar gestión de unidades y parches.
 - [ ] Permitir vincular miembros con sus cuentas de Discord del servidor.
 - [ ] Implementar en el frontend la configuración de eventos que no cuentan para las estadísticas generales (por tipo e individualmente).(actualmente solo esta aplicado en el backend)
 - [ ] Agregar gestión de roles y permisos de usuarios.
-- [ ] Implementar la visualización de `audit_logs` en el frontend.
+- [x] Implementar la visualización de `audit_logs` en el frontend.
 - [ ] Permitir agregar imágenes a los miembros.
 - [ ] Registrar `audit_logs` en la mayoría de los endpoints de escritura y modificación (actualmente solo esta aplicado a eventos y asistencias).
 - [ ] Implementar navegación mediante React Router.
@@ -16,7 +16,7 @@
 
 - [ ] Añadir Alertas globales en operaciones fetch que se manejen por  fuera  del control directo de un boton
 - [ ] Añadir en todas las modales Alertas_globales cuando terminen una operacion ya sea por error o por confirmacion 
-- [ ] 
+- [ ] pasar  el delete_at de member a TIMESTAMPTZ  esto implica migrar en la  bd de prod
 - [ ] 
 - [ ] 
 - [ ] 
