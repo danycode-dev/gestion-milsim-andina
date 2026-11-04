@@ -3,6 +3,7 @@ import { useState } from "react";
 import { useDashboardData } from "../../context/DataContext";
 import { useModal } from "../../context/ModalContext";
 import { ALERT_TYPES, useAlertGlobal } from "../../context/AlertContext";
+import { countryFlags, countryNames } from "../../utils/countries";
 
 export default function EditMemberModal({
     member = {
@@ -20,7 +21,9 @@ export default function EditMemberModal({
         {
             nickname:member.nickname,
             rank_id:member.rank_id,
-            unit_id:member.unit_id
+            unit_id:member.unit_id,
+            join_date: member.join_date?.slice(0, 10) ?? "",
+            nationality_code: member.nationality_code ?? ""
         }
     )
     const summitHandler = async ()=>{
@@ -59,7 +62,9 @@ export default function EditMemberModal({
     const hasChange =
         values.nickname !== member.nickname ||
         values.rank_id !== member.rank_id ||
-        values.unit_id !== member.unit_id
+        values.unit_id !== member.unit_id || 
+        values.join_date !== member.join_date?.slice(0, 10) ||
+        values.nationality_code !== member.nationality_code
 
     return (
         <div className="fixed inset-0 z-100 flex items-center justify-center bg-black/80 backdrop-blur-sm">
@@ -161,6 +166,44 @@ export default function EditMemberModal({
                                   {item.name}
                                 </option>
                               ))}
+                            </select>
+                        </div>
+                        {/* Fecha de ingreso */}
+                        <div>
+                            <label className="block text-sm font-medium text-gray-300 mb-2">
+                                Fecha de ingreso
+                            </label>
+                                                
+                            <input
+                                type="date"
+                                className="w-full py-2 bg-dashboard-item rounded-xs"
+                                value={values.join_date}
+                                onChange={(e) =>
+                                    valueChangeHandler('join_date', e.target.value)
+                                }
+                            />
+                        </div>
+
+                        {/* Nacionalidad */}
+                        <div>
+                            <label className="block text-sm font-medium text-gray-300 mb-2">
+                                Nacionalidad
+                            </label>
+
+                            <select
+                                value={values.nationality_code}
+                                className="w-full py-2 bg-dashboard-item rounded-xs"
+                                onChange={(e) =>
+                                    valueChangeHandler('nationality_code', e.target.value)
+                                }
+                            >
+                                <option value="">Sin nacionalidad registrada</option>
+                            
+                                {Object.entries(countryNames).map(([code, name]) => (
+                                    <option key={code} value={code}>
+                                        {countryFlags[code]} {name}
+                                    </option>
+                                ))}
                             </select>
                         </div>
 
