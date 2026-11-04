@@ -17,7 +17,7 @@
 - [ ] Añadir Alertas globales en operaciones fetch que se manejen por  fuera  del control directo de un boton
 - [ ] Añadir en todas las modales Alertas_globales cuando terminen una operacion ya sea por error o por confirmacion 
 - [ ] pasar  el delete_at de member a TIMESTAMPTZ  esto implica migrar en la  bd de prod
-- [ ] 
+- [ ] Arreglar bug en modal visual member al actualisar miembro no se refresca la info de la modal
 - [ ] 
 - [ ] 
 
