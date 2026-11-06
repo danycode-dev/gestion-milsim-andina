@@ -251,6 +251,7 @@ const updateEventAndAttendace = async (changes, eventId) => {
 };
 
   const updateMember = async (changes, memberId)=>{
+    if (changes.join_date === "") changes.join_date = null; 
     try {
       const res = await fetch(`${config.apiUrl}/members/${memberId}`, {
         credentials: "include",
