@@ -11,6 +11,8 @@ export default function EditMemberModal({
         nickname: "",
         rank_id: "",
         unit_id:"",
+        join_date: "",
+        nationality_code: ""
     }
 }) {
   const {ranksById, dashboardData, isLoading, error, reloadData, membersById, updateMember } = useDashboardData();

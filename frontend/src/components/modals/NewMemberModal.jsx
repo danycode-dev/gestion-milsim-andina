@@ -3,6 +3,7 @@ import { useState } from "react";
 import { useDashboardData } from "../../context/DataContext";
 import { useModal } from "../../context/ModalContext";
 import { ALERT_TYPES, useAlertGlobal } from "../../context/AlertContext";
+import { countryFlags, countryNames } from "../../utils/countries";
 
 export default function NewMemberModal({}
 ) {
@@ -13,6 +14,8 @@ export default function NewMemberModal({}
         nickname: "",
         rank_id: "",
         unit_id:"",
+        join_date: "",
+        nationality_code: ""
     }
 
     const { closeModal } = useModal();
@@ -20,7 +23,9 @@ export default function NewMemberModal({}
         {
             nickname:member.nickname,
             rank_id:member.rank_id,
-            unit_id:member.unit_id
+            unit_id:member.unit_id,
+            join_date: member.join_date?.slice(0, 10) ?? "",
+            nationality_code: member.nationality_code ?? ""
         }
     )
     const summitHandler = async ()=>{
@@ -59,7 +64,9 @@ export default function NewMemberModal({}
     const hasChange =
         values.nickname !== member.nickname ||
         values.rank_id !== member.rank_id ||
-        values.unit_id !== member.unit_id
+        values.unit_id !== member.unit_id ||
+        values.join_date !== member.join_date?.slice(0, 10) ||
+        values.nationality_code !== member.nationality_code
 
     return (
         <div className="fixed inset-0 z-100 flex items-center justify-center bg-black/80 backdrop-blur-sm">
@@ -163,6 +170,41 @@ export default function NewMemberModal({}
                                   {item.name}
                                 </option>
                               ))}
+                            </select>
+                        </div>
+
+
+                        {/* Fecha de ingreso */}
+                        <div>
+                            <label className="block text-sm font-medium text-gray-300 mb-2">
+                                Fecha de ingreso
+                            </label>
+                            <input
+                                type="date"
+                                value={values.join_date}
+                                onChange={(e) => valueChangeHandler('join_date', e.target.value)}
+                                className="w-full py-2 bg-dashboard-item rounded-xs"
+                            />
+                        </div>
+
+                        {/* Nacionalidad */}
+                        <div>
+                            <label className="block text-sm font-medium text-gray-300 mb-2">
+                                Nacionalidad
+                            </label>
+                            <select
+                                value={values.nationality_code}
+                                onChange={(e) => valueChangeHandler('nationality_code', e.target.value)}
+                                className="w-full py-2 bg-dashboard-item rounded-xs"
+                            >
+                                <option value="" disabled className="bg-dashboard-item">
+                                    Seleccione una nacionalidad
+                                </option>
+                                {Object.entries(countryNames).map(([code, name]) => (
+                                    <option key={code} value={code}>
+                                        {countryFlags[code]} {name}
+                                    </option>
+                                ))}
                             </select>
                         </div>
 
