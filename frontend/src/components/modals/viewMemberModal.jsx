@@ -16,6 +16,7 @@ export default function ViewMemberModal({
 }
 ) {
     const {ranksById, dashboardData, isLoading, error, reloadData, membersById, unitsById } = useDashboardData();
+    member = membersById[member.id] ?? member;
 
     const currentMember = membersById[member.id] ?? member;
     
