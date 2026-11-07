@@ -8,7 +8,7 @@ const router = Router();
 router.post("/", requireAuth, raizPost);
 
 // GET /events/:eventId/attendance para obtener las asistencias de un evento específico 
-router.get("/:eventId/attendance", getAttendance);
+router.get("/:eventId/attendance",requireAuth ,getAttendance);
 
 // PATCH /event/:eventId
 router.patch("/:eventId", requireAuth, patchEvent);

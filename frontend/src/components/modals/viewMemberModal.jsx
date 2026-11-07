@@ -4,6 +4,7 @@ import { useDashboardData } from "../../context/DataContext";
 import { useModal } from "../../context/ModalContext";
 import { User } from "../../entities/user.entity";
 import { useUser } from "../../context/UserContext";
+import { countryFlags, countryNames } from "../../utils/countries";
 
 export default function ViewMemberModal({
 
@@ -15,6 +16,7 @@ export default function ViewMemberModal({
 }
 ) {
     const {ranksById, dashboardData, isLoading, error, reloadData, membersById, unitsById } = useDashboardData();
+    member = membersById[member.id] ?? member;
 
     const currentMember = membersById[member.id] ?? member;
     
@@ -166,6 +168,46 @@ export default function ViewMemberModal({
                                             </>
                                     )}
 
+                                </span>
+                            </div> 
+                            {/* Fecha de ingreso */}
+                            <div className="
+                                flex items-center justify-between
+                                px-4 py-3
+                                rounded-lg
+                                bg-dashboard-border/20
+                                border border-dashboard-border
+                            ">
+                                <span className="text-sm text-gray-400">
+                                    Fecha de ingreso
+                                </span>
+                                    
+                                <span className="text-sm font-medium text-gray-200 flex gap-2 items-center">
+                                    {member.join_date
+                                        ? new Date(
+                                            `${member.join_date.slice(0, 10)}T00:00:00`
+                                          ).toLocaleDateString("es-CL")
+                                        : "Fecha de ingreso no disponible"
+                                    }
+                                </span>
+                            </div>   
+
+                            {/* Nacionalidad */}
+                            <div className="
+                                flex items-center justify-between
+                                px-4 py-3
+                                rounded-lg
+                                bg-dashboard-border/20
+                                border border-dashboard-border
+                            ">
+                                <span className="text-sm text-gray-400">
+                                    Nacionalidad
+                                </span>
+                                    
+                                <span className="text-sm font-medium text-gray-200 flex gap-2 items-center">
+                                        {countryNames[member.nationality_code] || member.nationality_code || 'Nacionalidad no disponible'}
+                                        {countryFlags[member.nationality_code] ? <span>{countryFlags[member.nationality_code]}</span>:null}
+                                                
                                 </span>
                             </div>  
                         </div>

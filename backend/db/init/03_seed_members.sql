@@ -12,7 +12,10 @@ INSERT INTO permissions (name) VALUES
 ('users.create'),
 ('users.edit'),
 ('users.delete'),
-('audit_logs.view');
+('audit_logs.view'),
+('roles.create'),
+('roles.edit'),
+('roles.delete');
 
 -- =========================================
 -- ROLES PREDETERMINADOS

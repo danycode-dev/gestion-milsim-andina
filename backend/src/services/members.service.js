@@ -10,6 +10,8 @@ const allowedFields = {
     nickname: 'nickname',
     rank_id: 'rank_id',
     unit_id:'unit_id',
+    join_date:'join_date',
+    nationality_code:'nationality_code',
 };
 
 export async function newMember(
@@ -17,6 +19,8 @@ export async function newMember(
         nickname,
         rank_id,
         unit_id,
+        nationality_code,
+        join_date
     },
     idActor 
 ) {
@@ -24,8 +28,8 @@ export async function newMember(
     const client = await pool.connect();
     try{
         await client.query('BEGIN');
-        const query = 'INSERT INTO members(nickname, rank_id, unit_id) VALUES($1, $2, $3) RETURNING *';
-        const {rows} = await client.query(query, [member.nickname, member.rank_id, member.unit_id]);
+        const query = 'INSERT INTO members(nickname, rank_id, unit_id, join_date, nationality_code) VALUES($1, $2, $3, $4, $5) RETURNING *';
+        const {rows} = await client.query(query, [member.nickname, member.rank_id, member.unit_id, member.join_date, member.nationality_code]);
         await createAuditLog(client, {
             actorId: idActor,
             action: "member.create",

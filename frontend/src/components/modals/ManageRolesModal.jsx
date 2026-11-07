@@ -3,14 +3,13 @@ import { useState } from "react";
 import { useModal } from "../../context/ModalContext";
 import { ALERT_TYPES, useAlertGlobal } from "../../context/AlertContext";
 import { useDashboardData } from "../../context/DataContext";
+import { User } from "../../entities/user.entity";
+import { useUser } from "../../context/UserContext";
 
-export default function ManageRolesModal({
-
-  onSaveRole,
-  onDeleteRole
-}) {
-
-  const { dashboardData, rolesById } = useDashboardData(); 
+export default function ManageRolesModal({}) {
+  /** @type {{ user: User | undefined }} */
+  const { user:selfUser } = useUser();
+  const { dashboardData, rolesById, updateRole, newRole, deleteRole } = useDashboardData(); 
 	const roles = dashboardData.roles
 	 const permissions = dashboardData.permissions
 
@@ -18,6 +17,7 @@ export default function ManageRolesModal({
 
   const { closeModal } = useModal();
   const { addGlobalAlert } = useAlertGlobal();
+  const {openModal} = useModal();
 
   const [selectedId, setSelectedId] = useState(roles[0]?.id ?? null);
   const [creating, setCreating] = useState(false);
@@ -26,6 +26,31 @@ export default function ManageRolesModal({
   const selectedRole = roles.find(
     role => role.id === selectedId
   );
+
+
+
+  const getChanges = () => {
+  if (!selectedRole) return {};
+
+  const changes = {};
+
+  if (values.name.trim() !== selectedRole.name) {
+    changes.name = values.name.trim();
+  }
+
+  const oldPermissions = selectedRole.permissions ?? [];
+  const newPermissions = values.permissions;
+
+  const samePermissions =
+    oldPermissions.length === newPermissions.length &&
+    oldPermissions.every(p => newPermissions.includes(p));
+
+  if (!samePermissions) {
+    changes.permissions = newPermissions;
+  }
+
+  return changes;
+};
 
   // Estado editable
   const [values, setValues] = useState({
@@ -84,11 +109,23 @@ export default function ManageRolesModal({
     setSaving(true);
 
     try {
-      await onSaveRole({
-        id: creating ? null : selectedId,
-        name: values.name.trim(),
-        permissions: values.permissions
-      });
+
+      if (creating) {
+        await newRole(values);
+      }else {
+        if(selfUser?.role_id === selectedRole.id){
+          addGlobalAlert({
+            estado: ALERT_TYPES.ERROR,
+            msg: "No puedes editar tu propio rol."
+          });
+          return;
+        }
+        const changes = getChanges();
+        
+        if (!Object.keys(changes).length > 0) throw new Error("No hay cambios para guardar.");
+        await updateRole(changes, selectedRole.id );
+      }
+        
 
       addGlobalAlert({
         estado: ALERT_TYPES.SUCCESS,
@@ -112,12 +149,23 @@ export default function ManageRolesModal({
   const deleteHandler = async () => {
     if (!selectedRole || saving) return;
 
-    // Debe confirmarse antes de llamar a este handler.
-    // Aquí solo ejecutamos la operación recibida.
+    if(selfUser?.role_id === selectedRole.id){
+      addGlobalAlert({
+        estado: ALERT_TYPES.ERROR,
+        msg: "No puedes eliminar tu propio rol."
+      });
+      return;
+    }
+    const confirmed = await openModal("confirm", {
+      title: "Eliminar Rol",
+      message: `¿Estás seguro de que quieres ELIMINAR el rol: ${selectedRole.name}?`,
+      confirmText: "Eliminar",
+      danger: true
+    });
     setSaving(true);
 
     try {
-      await onDeleteRole(selectedRole.id);
+      await deleteRole(selectedRole.id);
 
       addGlobalAlert({
         estado: ALERT_TYPES.SUCCESS,

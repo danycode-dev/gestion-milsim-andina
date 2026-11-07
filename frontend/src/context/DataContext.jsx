@@ -80,6 +80,86 @@ export function DataProvider({ children }) {
     return result.data;
   };
 
+  const updateRole = async (changes, roleId)=>{
+    console.log('updateRole: ', changes, roleId)
+    try {
+      const res = await fetch(`${config.apiUrl}/roles/${roleId}`, {
+        credentials: "include",
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(changes)
+      });
+      if (!res.ok) {
+        const error = await res.json().catch(() => ({}));
+        throw new Error(
+          error.error || error.message || `Error ${res.status}: ${res.statusText}`
+        );
+      }
+      const data = await res.json();
+      if (data?.ok === false) {
+        throw new Error(data.message || "Error con la petición");
+      }
+      // recargar usarios y dataGeneral para sacar los roles y permisos actualizados
+      // TODO: optimisar esto para que no recargue todo, sino solo los roles y permisos o sacar la info del enpoint
+      fetchUsers()
+      reloadData()
+    }catch(e){
+      console.error(e)
+      throw e
+    }
+  }
+  const newRole = async (roleData) => {
+    const res = await fetch(`${config.apiUrl}/roles`, {
+      credentials: "include",
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(roleData)
+    });
+
+    if (!res.ok) {
+      const result = await res.json().catch(() => ({}));
+      throw new Error(result.error || "Error al crear rol");
+    }
+
+    const result = await res.json();
+
+    await fetchUsers();
+    await reloadData();
+
+    return result;
+  };
+  const deleteRole = async (roleId)=>{
+    try {
+      const res = await fetch(`${config.apiUrl}/roles/${roleId}`, {
+        credentials: "include",
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json"
+        },
+      });
+      if (!res.ok) {
+        const error = await res.json().catch(() => ({}));
+        throw new Error(
+          error.error || error.message || `Error ${res.status}: ${res.statusText}`
+        );
+      }
+      const data = await res.json();
+      if (data?.ok === false) {
+        throw new Error(data.message || "Error con la petición");
+      }
+      fetchUsers()
+      reloadData()
+      return 
+    }catch(e){
+      console.error(e)
+      throw e
+    }
+  }
+
   const fetchUsers = async () => {
     console.log('comenzando feth')
     setUsersLoading(true);
@@ -181,7 +261,11 @@ export function DataProvider({ children }) {
 	const loadAttendancebyId = async (eventId) => {
     console.log('loadAtendancebyID: ', eventId)
     try {
-      const res = await fetch(`${config.apiUrl}/events/${eventId}/attendance`)
+      const res = await fetch(`${config.apiUrl}/events/${eventId}/attendance`,
+        {
+          credentials:'include'
+        }
+      );
       if (!res.ok) {
         throw new Error("Error fetching attendance data");
       }
@@ -251,6 +335,7 @@ const updateEventAndAttendace = async (changes, eventId) => {
 };
 
   const updateMember = async (changes, memberId)=>{
+    if (changes.join_date === "") changes.join_date = null; 
     try {
       const res = await fetch(`${config.apiUrl}/members/${memberId}`, {
         credentials: "include",
@@ -305,7 +390,8 @@ const updateEventAndAttendace = async (changes, eventId) => {
     throw e;
   }
 };
-  const newMember = async (member={nickname, rank_id, unit_id})=>{
+  const newMember = async (member={nickname, rank_id, unit_id, join_date, nationality_code})=>{
+    if (member.join_date === "") member.join_date = null;
     try {
       const res = await fetch(`${config.apiUrl}/members`, {
         credentials: "include",
@@ -341,7 +427,11 @@ const updateEventAndAttendace = async (changes, eventId) => {
   const fetchData = async ({loadAttendancesforids=[]}={loadAttendancesforids:[]}) => {
     console.log("ReloadData");
     try {
-        const res = await fetch(`${config.apiUrl}/app/bootstrap`);
+        const res = await fetch(`${config.apiUrl}/app/bootstrap`,
+          {
+            credentials:'include'
+          }
+        );
     
       if (!res.ok) {
         throw new Error("Error en la petición");
@@ -353,7 +443,12 @@ const updateEventAndAttendace = async (changes, eventId) => {
       if (loadAttendancesforids.length > 0) {
         for (const eventId of loadAttendancesforids) {
           try {
-            const attendanceRes = await fetch(`${config.apiUrl}/events/${eventId}/attendance`);
+            //TODO: revisar si se utiliza TODO: posiblemente eestoy repitiendo codigo Revisar y juntar
+            const attendanceRes = await fetch(`${config.apiUrl}/events/${eventId}/attendance`,
+              {
+                credentials:'include'
+              }
+            );
             if (!attendanceRes.ok) {
               throw new Error(`Error fetching attendance for event ${eventId}`);
             }
@@ -400,7 +495,10 @@ const updateEventAndAttendace = async (changes, eventId) => {
     auditLogs,
     fetchAuditLogs,
     updateUser,
-    deleteUser
+    deleteUser,
+    updateRole,
+    newRole,
+    deleteRole,
   };
 
   
