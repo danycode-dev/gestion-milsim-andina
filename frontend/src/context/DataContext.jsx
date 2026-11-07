@@ -181,7 +181,11 @@ export function DataProvider({ children }) {
 	const loadAttendancebyId = async (eventId) => {
     console.log('loadAtendancebyID: ', eventId)
     try {
-      const res = await fetch(`${config.apiUrl}/events/${eventId}/attendance`)
+      const res = await fetch(`${config.apiUrl}/events/${eventId}/attendance`,
+        {
+          credentials:'include'
+        }
+      );
       if (!res.ok) {
         throw new Error("Error fetching attendance data");
       }
@@ -343,7 +347,11 @@ const updateEventAndAttendace = async (changes, eventId) => {
   const fetchData = async ({loadAttendancesforids=[]}={loadAttendancesforids:[]}) => {
     console.log("ReloadData");
     try {
-        const res = await fetch(`${config.apiUrl}/app/bootstrap`);
+        const res = await fetch(`${config.apiUrl}/app/bootstrap`,
+          {
+            credentials:'include'
+          }
+        );
     
       if (!res.ok) {
         throw new Error("Error en la petición");
@@ -355,7 +363,12 @@ const updateEventAndAttendace = async (changes, eventId) => {
       if (loadAttendancesforids.length > 0) {
         for (const eventId of loadAttendancesforids) {
           try {
-            const attendanceRes = await fetch(`${config.apiUrl}/events/${eventId}/attendance`);
+            //TODO: revisar si se utiliza TODO: posiblemente eestoy repitiendo codigo Revisar y juntar
+            const attendanceRes = await fetch(`${config.apiUrl}/events/${eventId}/attendance`,
+              {
+                credentials:'include'
+              }
+            );
             if (!attendanceRes.ok) {
               throw new Error(`Error fetching attendance for event ${eventId}`);
             }
