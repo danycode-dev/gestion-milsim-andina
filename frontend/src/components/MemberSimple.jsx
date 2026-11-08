@@ -4,6 +4,7 @@ import { useDashboardData } from "../context/DataContext";
 import { useModal } from "../context/ModalContext";
 import { useUser } from "../context/UserContext";
 import { User } from "../entities/user.entity";
+import { countryFlags } from "../utils/countries";
 
 
 function MemberSimple({
@@ -42,6 +43,7 @@ function MemberSimple({
         {/* Logo */}
         <div
           className="
+            relative
             w-9
             h-9
             shrink-0
@@ -57,6 +59,10 @@ function MemberSimple({
             text-(--accent-color)
           "
         >
+
+          {countryFlags[member.nationality_code] ? 
+          <span className="absolute -right-2 -bottom-2 opacity-50">{countryFlags[member.nationality_code]}</span>
+          :null}
           {member.nickname
             ?.charAt(0)
             ?.toUpperCase() || "?"}
