@@ -24,7 +24,7 @@ export async function getBootstrap() {
                 
             `),
             client.query("SELECT id, rank_name, display_order, short_name, plural_name FROM ranks ORDER BY display_order ASC;"),
-            client.query("SELECT id, name, event_date, type_id FROM events"),
+            client.query("SELECT id, name, event_date, type_id FROM events ORDER BY event_date DESC;"),
             client.query("SELECT id, name, short_name, logo_url FROM units"),
             client.query(`SELECT id, name FROM event_types;`),
             client.query(`SELECT member_id, event_type_id, total_present, total_absences, total_justified FROM events_member_type_stats;`),
