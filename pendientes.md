@@ -9,7 +9,9 @@
 - [x] Agregar gestión de roles y permisos de usuarios.
 - [ ] Agregar sistema de anotaciones( info sensible asi que deve ser con permisos especiales)
 - [ ] Agregar descricion de eventos (esta implementado en la Db pero no en Front-end)
+- [ ] Agregar filtos  y botones para ordena las estadisticas
 - [ ] Permitir vincular miembros con sus cuentas de Discord del servidor.
+- [ ] la posibilidad de justificarse por uno o mas dias a traves de un boton de discord
 - [ ] Agregar gestión de unidades y parches.
 - [ ] Implementar en el frontend la configuración de eventos que no cuentan para las estadísticas generales (por tipo e individualmente).(actualmente solo esta aplicado en el backend)
 - [ ] Permitir agregar imágenes a los miembros.(2 imagenes la ic y la de ds)
@@ -18,10 +20,10 @@
 - [ ] Revisar si `events_attended` tiene utilidad; eliminarlo si no se utiliza.
 
 - [ ] Añadir Alertas globales en operaciones fetch que se manejen por  fuera  del control directo de un boton
-- [ ] Añadir en todas las modales Alertas_globales cuando terminen una operacion ya sea por error o por confirmacion 
+- [Revisar] Añadir en todas las modales Alertas_globales cuando terminen una operacion ya sea por error o por confirmacion 
 - [ ] pasar  el delete_at de member a TIMESTAMPTZ  esto implica migrar en la  bd de prod
 - [ ] Optimizar la recarga de datos  cuando se realisa un cambio
-- [ ] Seguridad, añadir col en Db roles para  poder bloquear un rol  para bloqueaar roles criticos como administrador y no puedan ser modificados 
+- [ ] Seguridad: añadir col en Db roles para  poder bloquear un rol  para bloqueaar roles criticos como administrador y no puedan ser modificados 
 
 
 
