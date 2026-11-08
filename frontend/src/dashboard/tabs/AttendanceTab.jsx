@@ -5,6 +5,7 @@ import { useModal } from '../../context/ModalContext';
 import { ALERT_TYPES, useAlertGlobal } from '../../context/AlertContext';
 import { User } from '../../entities/user.entity';
 import { useUser } from '../../context/UserContext';
+import MemberSimple from '../../components/MemberSimple';
 
 //NOTA: Este componente se volverá muy grande, se planea refactorisarlo en el futuro, 
 // se evitara usar inmutable data, el current event solo se usara para las nuevas asistencias, y se usara dashboardData para las asistencias existentes. y separar en componentes mas pequeño. 
@@ -849,93 +850,7 @@ return (
                         ">
 
                           {/* Nombre e info */}
-                          <div className="flex-1 min-w-0">
-
-                            <div className="
-                              flex
-                              items-center
-                              gap-2
-                              min-w-0
-                            ">
-                              
-                              {/* Logo */}
-                              <div
-                                className="
-                                  w-9
-                                  h-9
-                                  shrink-0
-                                  rounded-full
-                                  bg-[#454545]
-                                  border
-                                  border-[#555]
-                                  flex
-                                  items-center
-                                  justify-center
-                                  text-sm
-                                  font-bold
-                                  text-(--accent-color)
-                                "
-                              >
-                                {member.nickname
-                                  ?.charAt(0)
-                                  ?.toUpperCase() || "?"}
-
-                                
-                              </div>
-                              
-                              {/* short rank y name */}
-                              <button onClick={()=>{openProfile(member)}} 
-                              className='text-sm font-semibold text-gray-300 truncate
-                              hover:text-(--accent-color) transition cursor-pointer
-                              hover:scale-105
-                              '
-                              >
-                                <span className='text-gray-500'>
-                                  {rank.short_name !== ""
-                                  ? `[${rank.short_name}] `
-                                  : ""}
-                                </span>
-                                <span className="">                       
-
-                                  {member.nickname}
-
-                                </span>
-                              </button>
-
-                              {/* unidad  */}
-                              {unitsById[member.unit_id]?.logo_url && (
-                                <div
-                                  className="
-                                    ml-1
-                                    h-8 w-8
-                                    shrink-0
-                                    rounded-full
-                                    bg-[#2b2b2b]
-                                    border border-[#555]
-                                    p-0.5
-                                    flex items-center justify-center
-                                    overflow-hidden
-                                    transition
-                                    hover:border-(--accent-color)
-                                    hover:scale-120
-                                  "
-                                  title={unitsById[member.unit_id]?.name || "Unidad"}
-                                >
-                                  <img
-                                    src={unitsById[member.unit_id]?.logo_url}
-                                    alt={unitsById[member.unit_id]?.name || "Unidad"}
-                                    className="
-                                      h-full w-full
-                                      rounded-full
-                                      object-cover
-                                    "
-                                  />
-                                </div>
-                              )}
-
-                            </div>
-
-                          </div>
+                          <MemberSimple member={member} rank={rank}/>
 
 
                           {/* Opciones */}

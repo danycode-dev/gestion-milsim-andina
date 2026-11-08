@@ -4,6 +4,7 @@ import { useDashboardData } from "../../context/DataContext";
 import { useModal } from "../../context/ModalContext";
 import { User } from "../../entities/user.entity";
 import { useUser } from "../../context/UserContext";
+import MemberSimple from "../../components/MemberSimple";
 
 export default function StatsTab() {
   const { dashboardData, isLoading, error, membersById} = useDashboardData();
@@ -397,39 +398,7 @@ export default function StatsTab() {
                           >
                             {/* Miembro */}
                             <td className="px-5 py-3">
-                              <button
-                                type="button"
-                                onClick={() => openProfile(member)}
-                                className="
-                                  flex items-center gap-3
-                                  text-left group cursor-pointer
-                                "
-                              >
-                                <div className="
-                                  w-9 h-9 shrink-0
-                                  rounded-full bg-[#454545]
-                                  border border-[#555]
-                                  flex items-center justify-center
-                                  font-bold text-(--accent-color)
-                                ">
-                                  {member.nickname?.charAt(0)?.toUpperCase() || "?"}
-                                </div>
-
-                                <div className="min-w-0">
-                                  <span className="
-                                    text-gray-300 font-semibold
-                                    group-hover:text-(--accent-color)
-                                    transition-colors
-                                  ">
-                                    {rank.short_name && (
-                                      <span className="text-gray-500">
-                                        [{rank.short_name}]{" "}
-                                      </span>
-                                    )}
-                                    {member.nickname}
-                                  </span>
-                                </div>
-                              </button>
+                              <MemberSimple member={member} rank={rank}/>
                             </td>
 
                             {/* Presentes */}
