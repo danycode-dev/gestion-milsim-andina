@@ -10,6 +10,7 @@ import { useModal } from '../context/ModalContext';
 import { User } from '../entities/user.entity';
 import AuditLogsTab from './tabs/AuditLogsTab';
 import packageInfo from "../../package.json";
+import { Routes, Route, Navigate, NavLink } from "react-router";
 
 
 export default function DashboardPage() {
@@ -22,11 +23,28 @@ export default function DashboardPage() {
     const { openModal } = useModal();
     
 
-    function TabBtn({name, identify, permissionNeed }){
-      const block = permissionNeed ? !user.hasPermission(permissionNeed) : false
-      return(
-          <button disabled={block} className={`tab-btn disabled:opacity-60 disabled:hover:text-[#888] disabled:cursor-not-allowed ${activeTab === identify ? 'active' : ''}`} onClick={() => setActiveTab(`${identify}`)}>{name}</button>
-      )
+    function TabBtn({ name, identify, permissionNeed }){
+      const block = permissionNeed ? !user.hasPermission(permissionNeed) : false;
+    
+      return (
+        <NavLink
+          to={`/dashboard/${identify}`}
+          onClick={(e) => {
+            if (block) e.preventDefault();
+          }}
+          aria-disabled={block}
+          tabIndex={block ? -1 : undefined}
+          className={({ isActive }) => `
+            tab-btn
+            ${block
+              ? "opacity-60 cursor-not-allowed pointer-events-none"
+              : ""}
+            ${isActive ? "active" : ""}
+          `}
+        >
+          {name}
+        </NavLink>
+      );
     }
     const novedadesModalOpen= useRef(false)
 
@@ -180,22 +198,25 @@ export default function DashboardPage() {
         </header>
         
         <div className="tabs overflow-x-auto">
-            <TabBtn identify="registro" name="Registro Diario" permissionNeed='attendance.view'/>
-            <TabBtn identify="estadisticas" name="Estadísticas" permissionNeed='attendance.view'/>
+            <TabBtn identify="attendance" name="Registro Diario" permissionNeed='attendance.view'/>
+            <TabBtn identify="stats" name="Estadísticas" permissionNeed='attendance.view'/>
             {/* <TabBtn identify="meses" name="Meses" /> */}
-            <TabBtn identify="miembros" name="Gestionar Miembros" permissionNeed='members.view'/>
+            <TabBtn identify="members" name="Gestionar Miembros" permissionNeed='members.view'/>
             <TabBtn identify="users" name="Usuarios y Roles" permissionNeed='users.view'/>
-            <TabBtn identify="audit_logs" name="Logs" permissionNeed={'audit_logs.view'} />
-            <TabBtn identify="prox" name="Unidades y Parches" />
+            <TabBtn identify="audit-logs" name="Logs" permissionNeed={'audit_logs.view'} />
+            <TabBtn identify="units" name="Unidades y Parches" />
         </div>
 
 
-        {activeTab === 'registro' && <AttendanceTab />}
-        {activeTab === 'estadisticas' && <StatsTab />}
-        {activeTab === 'miembros' && <MemberTab />}
-        {activeTab === 'users' && <UsersTab />}
-        {activeTab === 'audit_logs' && <AuditLogsTab />}
-        {activeTab === 'prox' && <NameTab />}
+      <Routes>
+        <Route index element={<Navigate to="attendance" replace />} />
+        <Route path="attendance" element={<AttendanceTab />} />
+        <Route path="stats" element={<StatsTab />} />
+        <Route path="members" element={<MemberTab />} />
+        <Route path="users" element={<UsersTab />} />
+        <Route path="audit-logs" element={<AuditLogsTab />} />
+        <Route path="units" element={<NameTab />} />
+      </Routes>
     </>
     );
 } 
