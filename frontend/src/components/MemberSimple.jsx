@@ -16,7 +16,6 @@ function MemberSimple({
 
 	const { dashboardData, unitsById, ranksById } = useDashboardData();
 	const {openModal } = useModal();
-  console.log(member)
   rank = rank==null ?  ranksById[member.rank_id] : rank 
 
 	/** @type {{ user: User | undefined }} */
